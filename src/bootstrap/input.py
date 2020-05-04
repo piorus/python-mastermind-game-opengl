@@ -4,12 +4,12 @@ class Keyboard:
     def __init__(self):
         self._watched_inputs = {}
 
-    def process(self, pressed_keys):
+    def process(self, pressed_keys: dict):
         for key_code in self._watched_inputs.keys():
             if pressed_keys[key_code]:
                 self.invoke_input_callbacks(self._watched_inputs[key_code])
 
-    def invoke_input_callbacks(self, watched_inputs):
+    def invoke_input_callbacks(self, watched_inputs: dict):
         for watched_input in watched_inputs:
             watched_input.callback()
 

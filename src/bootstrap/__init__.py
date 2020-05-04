@@ -40,7 +40,9 @@ def run():
         events.post(events.DRAW, {
             'dt': current_frame - last_frame,
             'resolution': resolution,
-            'camera': camera
+            'camera': camera,
+            'view': glm.lookAt(camera.pos, camera.pos + camera.front, camera.up),
+            'projection': glm.perspective(glm.radians(camera.zoom),  resolution[0] / resolution[1], 0.1, 100.0)
         })
         last_frame = current_frame
 

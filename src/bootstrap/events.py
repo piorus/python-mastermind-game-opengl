@@ -46,7 +46,7 @@ class EventToWatch:
 
 class Events:
     DRAW = pygame.USEREVENT
-    UPDATE_CAMERA_FRONT = pygame.USEREVENT+1
+    UPDATE_CAMERA_FRONT = pygame.USEREVENT + 1
     def __init__(self):
         self.subject = Subject()
 

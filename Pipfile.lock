@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "632b7cb106df532aa7456c376d15ec4b07127e202576778e9e95a6bed5be5f28"
+            "sha256": "b9d9124a6722ea484b7865f36aa37e93c46e216fe23b0afab22188d29bcffb05"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -82,6 +82,13 @@
             ],
             "index": "pypi",
             "version": "==3.1.5"
+        },
+        "pywavefront": {
+            "hashes": [
+                "sha256:8433131b7086aed5734c500febd1a0cb433bbad7cc61b43499a3ffea9ca8c52a"
+            ],
+            "index": "pypi",
+            "version": "==1.3.2"
         }
     },
     "develop": {}

@@ -29,7 +29,7 @@ class Camera:
         self.update_camera_vectors()
 
     def update_camera_vectors(self):
-        # Calculate the new Front vector
+        # calculate the new front vector
         front = glm.vec3(
             math.cos(glm.radians(self.yaw)) * math.cos(glm.radians(self.pitch)),
             math.sin(glm.radians(self.pitch)),
@@ -37,8 +37,8 @@ class Camera:
         )
 
         self.front = glm.normalize(front)
-        # Also re-calculate the Right and Up vector
-        self.right = glm.normalize(glm.cross(self.front, self.world_up))  # Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+        # Also re-calculate the right and up vector
+        self.right = glm.normalize(glm.cross(self.front, self.world_up))  # normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
         self.up    = glm.normalize(glm.cross(self.right, self.front))
 
     def register_event_listeners(self, input, events):
