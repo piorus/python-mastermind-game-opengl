@@ -38,12 +38,18 @@ class ObjectFactory:
     def __init__(self):
         self.vao = None
         self.vbo = None
+        self.ebo = None
         self.stride = None
         self.vertices = None
+        self.indices = None
         self.attrib_pointers = []
 
     def set_vertices(self, vertices):
         self.vertices = vertices
+        return self
+
+    def set_indices(self, indices):
+        self.indices = indices
         return self
 
     def set_stride(self, stride):
@@ -78,10 +84,15 @@ class ObjectFactory:
             raise RuntimeError('Please set_stride(stride) before create().')
 
         glBindVertexArray(self.vao)
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
 
         if self.vertices:
+            glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
             glBufferData(GL_ARRAY_BUFFER, sizeof(self.vertices), self.vertices, GL_STATIC_DRAW)
+
+        if self.indices:
+            self.ebo = glGenBuffers(1)
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo)
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(self.indices), self.indices, GL_STATIC_DRAW)
 
         for attrib_pointer in self.attrib_pointers:
             glEnableVertexAttribArray(attrib_pointer['index'])
