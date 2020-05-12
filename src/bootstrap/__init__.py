@@ -6,8 +6,8 @@ from bootstrap.input import Input, Mouse, Keyboard
 from bootstrap.events import Events
 from bootstrap.camera import Camera
 
-resolution   = (800, 600)
-camera_front = glm.vec3(1.0, 1.0, 5.0)
+resolution   = (1024, 768)
+camera_front = glm.vec3(-10.0, 40.0, 15.0)
 
 pygame.init()
 window = pygame.display.set_mode(resolution, pygame.DOUBLEBUF|pygame.OPENGL)

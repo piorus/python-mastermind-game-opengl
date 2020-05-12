@@ -56,6 +56,21 @@ data["cube"] = {
     }
 }
 
+data['plane'] = {
+    "vertices":{
+        "data": [
+             5.0, -0.5,  5.0,  2.0, 0.0,
+            -5.0, -0.5,  5.0,  0.0, 0.0,
+            -5.0, -0.5, -5.0,  0.0, 2.0,
+
+             5.0, -0.5,  5.0,  2.0, 0.0,
+            -5.0, -0.5, -5.0,  0.0, 2.0,
+             5.0, -0.5, -5.0,  2.0, 2.0
+        ],
+    "type": GLfloat
+    }
+}
+
 data["sphere"] = {
     "vertices": {
         "data": [],
@@ -73,7 +88,7 @@ stack_count = 36
 sector_count = 18
 stack_step = pi / stack_count
 sector_step = 2 * pi / sector_count
-radius = 5
+radius = 3
 
 for i in range(stack_count + 1):
     stack_angle = pi / 2 - i * stack_step

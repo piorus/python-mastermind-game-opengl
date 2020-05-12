@@ -3,8 +3,8 @@ from pygame.locals import *
 
 class CameraDefaults:
     YAW = -90.0
-    PITCH = 0.0
-    SPEED = 10.0
+    PITCH = -90.0
+    SPEED = 25.0
     SENSIVITY = 0.3
     ZOOM = 45.0
 
