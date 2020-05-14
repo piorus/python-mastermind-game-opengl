@@ -7,7 +7,7 @@ from bootstrap.events import Events
 from bootstrap.camera import Camera
 
 resolution   = (1024, 768)
-camera_front = glm.vec3(-10.0, 40.0, 15.0)
+camera_front = glm.vec3(10.0, 40.0, 15.0)
 
 pygame.init()
 window = pygame.display.set_mode(resolution, pygame.DOUBLEBUF|pygame.OPENGL)

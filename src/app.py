@@ -26,14 +26,38 @@ plane = factory.create()
 
 sphere_shader = shaders.Shader('shaders/sphere.vert', 'shaders/sphere.frag')
 
-combination = [random.randint(1, 6) for i in range(4)]
+# combination = [random.randint(1, 6) for i in range(4)]
+combination = [1, 1, 2, 2]
 answers = [[0 for j in range(4)] for i in range(12)]
+feedback = [[] for i in range(12)]
 selected = [1 if i == 0 else 0 for i in range(4)]
-current_row = 0
+current_row = len(answers) - 1
 
-print(selected)
+answers[current_row] = [1, 1, 1, 2]
 
-def draw_sphere(event):
+print('combination:', combination)
+
+active_color = glm.vec3(0.0, 1.0, 0.0)
+inactive_color = glm.vec3(1.0, 1.0, 1.0)
+
+# got colors from: https://www.random.org/colors/hex
+# got normalized values from: http://doc.instantreality.org/tools/color_calculator/
+colors = [
+    glm.vec3(0.474, 0.847, 0.031),
+    glm.vec3(0.752, 0.247, 0.627),
+    glm.vec3(0.450, 0.752, 0.768),
+    glm.vec3(0.172, 0.333, 0.564),
+    glm.vec3(0.635, 0.274, 0.070),
+    glm.vec3(1.000, 1.000, 0.000)
+]
+
+def get_color(row, col, is_selected=False):
+    if answers[row][col]:
+        return colors[answers[row][col] - 1]
+
+    return active_color if is_selected else inactive_color
+
+def draw_spheres(event):
     sphere_shader.use()
 
     sphere_shader.set_mat4('view', event.view)
@@ -41,21 +65,30 @@ def draw_sphere(event):
 
     glBindVertexArray(sphere.vao)
 
+    x_start, z_start = 0, 0
+    offset = 2.5
+
     for row in range(24):
         for col in range(2):
-            model = glm.translate(glm.mat4(1.0), glm.vec3(col, 0.0, -1.25 + row))
+            model = glm.translate(glm.mat4(1.0), glm.vec3(offset * 4 - x_start + col, 0.0, (z_start + row * offset / 2) - offset / 4))
             sphere_shader.set_mat4('model', glm.scale(model, glm.vec3(0.25, 0.25, 0.25)))
             sphere_shader.set_vec3('aColor', glm.vec3(1.0, 0.0, 0.0) if col % 2 else glm.vec3(1.0, 1.0, 1.0))
             glDrawElements(GL_TRIANGLES, vertex_data.get_indices_count('sphere'), GL_UNSIGNED_INT, None)
 
     for row in range(12):
         for col in range(4):
-            model = glm.translate(glm.mat4(1.0), glm.vec3(-10 - col * (-2.5), 0.0, row * 2.5))
-            sphere_shader.set_mat4('model', glm.scale(model, glm.vec3(1.0, 1.0, 1.0)))
-            sphere_shader.set_vec3('aColor', glm.vec3(0.0, 1.0, 0.0))
-            glDrawElements(GL_TRIANGLES, vertex_data.get_indices_count('sphere'), GL_UNSIGNED_INT, None)
+            is_selected = row == current_row and col == selected.index(1)
+            color = get_color(row, col, is_selected)
 
-events.on(events.DRAW, draw_sphere)
+            model = glm.translate(glm.mat4(1.0), glm.vec3(x_start + col * offset, 0.0, z_start + row * offset))
+            sphere_shader.set_mat4('model', model)
+            sphere_shader.set_vec3('aColor', color)
+
+            if is_selected: glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+            glDrawElements(GL_TRIANGLES, vertex_data.get_indices_count('sphere'), GL_UNSIGNED_INT, None)
+            if is_selected: glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+
+events.on(events.DRAW, draw_spheres)
 
 def change_active_cell(event):
     index = selected.index(1)
@@ -69,9 +102,8 @@ events.on(pygame.KEYDOWN, change_active_cell, conditions={'key': pygame.K_SPACE}
 
 def change_selection(to):
     answers[current_row][selected.index(1)] = to
-    for row in answers:
-        print(row)
 
+# bind keys 1-6 as active selection switchers
 events.on(pygame.KEYDOWN, lambda event: change_selection(1), conditions={'key': pygame.K_1})
 events.on(pygame.KEYDOWN, lambda event: change_selection(2), conditions={'key': pygame.K_2})
 events.on(pygame.KEYDOWN, lambda event: change_selection(3), conditions={'key': pygame.K_3})
@@ -82,13 +114,30 @@ events.on(pygame.KEYDOWN, lambda event: change_selection(6), conditions={'key': 
 def check_row(event):
     if 0 in answers[current_row]:
         print('Błąd. Nie wybrano wszystkich wartości z wiersza.')
+        #@TODO trigger validation error
         return
 
-    if combination == answers[current_row]:
+    if answers[current_row] == combination:
         print('YOU WIN. Congratulations.')
+        #@TODO trigger game end event
+
+    indexes_to_skip = []
+
+    for index, selection in enumerate(answers[current_row]):
+        if combination[index] == selection:
+            feedback[current_row].append(1)
+            indexes_to_skip.append(index)
+
+    for index, combination_digit in enumerate(combination):
+        if(index not in indexes_to_skip and combination_digit == answers[current_row][index]):
+            print(index)
+            feedback[current_row].append(2)
+
+    feedback[current_row].sort()
 
 events.on(pygame.KEYDOWN, check_row, conditions={'key': pygame.K_RETURN})
 
+check_row(None)
 
 glEnable(GL_DEPTH_TEST)
 run()
