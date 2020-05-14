@@ -26,6 +26,13 @@ plane = factory.create()
 
 sphere_shader = shaders.Shader('shaders/sphere.vert', 'shaders/sphere.frag')
 
+combination = [random.randint(1, 6) for i in range(4)]
+answers = [[0 for j in range(4)] for i in range(12)]
+selected = [1 if i == 0 else 0 for i in range(4)]
+current_row = 0
+
+print(selected)
+
 def draw_sphere(event):
     sphere_shader.use()
 
@@ -50,7 +57,38 @@ def draw_sphere(event):
 
 events.on(events.DRAW, draw_sphere)
 
-# events.on(pygame.KEYDOWN, activate_cube, conditions={'key': pygame.K_SPACE})
+def change_active_cell(event):
+    index = selected.index(1)
+    next_index = 0
+    selected[index] = 0
+    if index + 1 < len(selected):
+        next_index = index + 1
+    selected[next_index] = 1
+
+events.on(pygame.KEYDOWN, change_active_cell, conditions={'key': pygame.K_SPACE})
+
+def change_selection(to):
+    answers[current_row][selected.index(1)] = to
+    for row in answers:
+        print(row)
+
+events.on(pygame.KEYDOWN, lambda event: change_selection(1), conditions={'key': pygame.K_1})
+events.on(pygame.KEYDOWN, lambda event: change_selection(2), conditions={'key': pygame.K_2})
+events.on(pygame.KEYDOWN, lambda event: change_selection(3), conditions={'key': pygame.K_3})
+events.on(pygame.KEYDOWN, lambda event: change_selection(4), conditions={'key': pygame.K_4})
+events.on(pygame.KEYDOWN, lambda event: change_selection(5), conditions={'key': pygame.K_5})
+events.on(pygame.KEYDOWN, lambda event: change_selection(6), conditions={'key': pygame.K_6})
+
+def check_row(event):
+    if 0 in answers[current_row]:
+        print('Błąd. Nie wybrano wszystkich wartości z wiersza.')
+        return
+
+    if combination == answers[current_row]:
+        print('YOU WIN. Congratulations.')
+
+events.on(pygame.KEYDOWN, check_row, conditions={'key': pygame.K_RETURN})
+
 
 glEnable(GL_DEPTH_TEST)
 run()
