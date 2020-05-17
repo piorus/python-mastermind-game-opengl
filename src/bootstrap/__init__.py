@@ -1,31 +1,34 @@
 import pygame
 import glm
 from OpenGL.GL import *
-from OpenGL.GLU import *
 from bootstrap.input import Input, Mouse, Keyboard
 from bootstrap.events import Events
 from bootstrap.camera import Camera
 
-resolution   = (1024, 768)
+resolution = (1024, 768)
 camera_front = glm.vec3(10.0, 40.0, 15.0)
 
 pygame.init()
-window = pygame.display.set_mode(resolution, pygame.DOUBLEBUF|pygame.OPENGL)
-clock  = pygame.time.Clock()
+window = pygame.display.set_mode(resolution, pygame.DOUBLEBUF | pygame.OPENGL)
+clock = pygame.time.Clock()
 
-mouse    = Mouse()
+mouse = Mouse()
 keyboard = Keyboard()
 
-input    = Input(mouse, keyboard)
-events   = Events()
+input = Input(mouse, keyboard)
+events = Events()
 
-camera   = Camera(camera_front)
+camera = Camera(camera_front)
 camera.register_event_listeners(input, events)
+
 
 def on_mouse_move(event):
     mouse.on_mouse_move(event)
     camera.process_mouse_movement(mouse.x_offset, mouse.y_offset)
+
+
 events.on(pygame.MOUSEMOTION, on_mouse_move)
+
 
 def run():
     last_frame = 0
@@ -42,7 +45,7 @@ def run():
             'resolution': resolution,
             'camera': camera,
             'view': glm.lookAt(camera.pos, camera.pos + camera.front, camera.up),
-            'projection': glm.perspective(glm.radians(camera.zoom),  resolution[0] / resolution[1], 0.1, 100.0)
+            'projection': glm.perspective(glm.radians(camera.zoom), resolution[0] / resolution[1], 0.1, 100.0)
         })
         last_frame = current_frame
 
