@@ -5,7 +5,7 @@ from bootstrap import events, run
 from utils import load_texture, ObjectFactory
 import shaders
 import vertex_data
-#@TODO replace it with static colors later on
+# @TODO replace it with static colors later on
 import random
 
 factory = ObjectFactory()
@@ -51,11 +51,13 @@ colors = [
     glm.vec3(1.000, 1.000, 0.000)
 ]
 
+
 def get_color(row, col, is_selected=False):
     if answers[row][col]:
         return colors[answers[row][col] - 1]
 
     return active_color if is_selected else inactive_color
+
 
 def draw_spheres(event):
     sphere_shader.use()
@@ -67,12 +69,17 @@ def draw_spheres(event):
 
     x_start, z_start = 0, 0
     offset = 2.5
+    feedback_offset = offset / 3
 
-    for row in range(24):
-        for col in range(2):
-            model = glm.translate(glm.mat4(1.0), glm.vec3(offset * 4 - x_start + col, 0.0, (z_start + row * offset / 2) - offset / 4))
+    for row in range(12):
+        x1 = x_start + 10
+        x2 = x1 + feedback_offset
+        z1 = z_start - feedback_offset / 2 + row * offset
+        z2 = z1 + feedback_offset
+        for x, z in [(x1, z1), (x2, z1), (x1, z2), (x2, z2)]:
+            model = glm.translate(glm.mat4(1.0), glm.vec3(x, 0.0, z))
             sphere_shader.set_mat4('model', glm.scale(model, glm.vec3(0.25, 0.25, 0.25)))
-            sphere_shader.set_vec3('aColor', glm.vec3(1.0, 0.0, 0.0) if col % 2 else glm.vec3(1.0, 1.0, 1.0))
+            sphere_shader.set_vec3('aColor', glm.vec3(1.0, 1.0, 0.0))
             glDrawElements(GL_TRIANGLES, vertex_data.get_indices_count('sphere'), GL_UNSIGNED_INT, None)
 
     for row in range(12):
@@ -88,7 +95,9 @@ def draw_spheres(event):
             glDrawElements(GL_TRIANGLES, vertex_data.get_indices_count('sphere'), GL_UNSIGNED_INT, None)
             if is_selected: glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
+
 events.on(events.DRAW, draw_spheres)
+
 
 def change_active_cell(event):
     index = selected.index(1)
@@ -98,10 +107,13 @@ def change_active_cell(event):
         next_index = index + 1
     selected[next_index] = 1
 
+
 events.on(pygame.KEYDOWN, change_active_cell, conditions={'key': pygame.K_SPACE})
+
 
 def change_selection(to):
     answers[current_row][selected.index(1)] = to
+
 
 # bind keys 1-6 as active selection switchers
 events.on(pygame.KEYDOWN, lambda event: change_selection(1), conditions={'key': pygame.K_1})
@@ -111,15 +123,16 @@ events.on(pygame.KEYDOWN, lambda event: change_selection(4), conditions={'key': 
 events.on(pygame.KEYDOWN, lambda event: change_selection(5), conditions={'key': pygame.K_5})
 events.on(pygame.KEYDOWN, lambda event: change_selection(6), conditions={'key': pygame.K_6})
 
+
 def check_row(event):
     if 0 in answers[current_row]:
         print('Błąd. Nie wybrano wszystkich wartości z wiersza.')
-        #@TODO trigger validation error
+        # @TODO trigger validation error
         return
 
     if answers[current_row] == combination:
         print('YOU WIN. Congratulations.')
-        #@TODO trigger game end event
+        # @TODO trigger game end event
 
     indexes_to_skip = []
 
@@ -129,11 +142,11 @@ def check_row(event):
             indexes_to_skip.append(index)
 
     for index, combination_digit in enumerate(combination):
-        if(index not in indexes_to_skip and combination_digit == answers[current_row][index]):
-            print(index)
+        if index not in indexes_to_skip and combination_digit == answers[current_row][index]:
             feedback[current_row].append(2)
 
     feedback[current_row].sort()
+
 
 events.on(pygame.KEYDOWN, check_row, conditions={'key': pygame.K_RETURN})
 
