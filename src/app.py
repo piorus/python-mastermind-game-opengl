@@ -27,13 +27,11 @@ plane = factory.create()
 sphere_shader = shaders.Shader('shaders/sphere.vert', 'shaders/sphere.frag')
 
 # combination = [random.randint(1, 6) for i in range(4)]
-combination = [1, 1, 2, 2]
+combination = [1, 2, 3, 4]
 answers = [[0 for j in range(4)] for i in range(12)]
 feedback = [[] for i in range(12)]
 selected = [1 if i == 0 else 0 for i in range(4)]
 current_row = len(answers) - 1
-
-answers[current_row] = [1, 1, 1, 2]
 
 print('combination:', combination)
 
@@ -51,12 +49,21 @@ colors = [
     glm.vec3(1.000, 1.000, 0.000)
 ]
 
-
 def get_color(row, col, is_selected=False):
     if answers[row][col]:
         return colors[answers[row][col] - 1]
 
     return active_color if is_selected else inactive_color
+
+
+def get_feedback_color(row, col):
+    color = None
+    if feedback[row][col] == 1:
+        color = glm.vec3(1.0, 0.0, 0.0)
+    elif feedback[row][col] == 2:
+        color = glm.vec3(1.0, 1.0, 1.0)
+
+    return color
 
 
 def draw_spheres(event):
@@ -76,10 +83,15 @@ def draw_spheres(event):
         x2 = x1 + feedback_offset
         z1 = z_start - feedback_offset / 2 + row * offset
         z2 = z1 + feedback_offset
-        for x, z in [(x1, z1), (x2, z1), (x1, z2), (x2, z2)]:
-            model = glm.translate(glm.mat4(1.0), glm.vec3(x, 0.0, z))
+
+        for index, feedback_pos in enumerate([(x1, z1), (x2, z1), (x1, z2), (x2, z2)]):
+            if len(feedback[row]) < index + 1 or feedback[row][index] == 0:
+                continue
+
+            feedback_x, feedback_z = feedback_pos
+            model = glm.translate(glm.mat4(1.0), glm.vec3(feedback_x, 0.0, feedback_z))
             sphere_shader.set_mat4('model', glm.scale(model, glm.vec3(0.25, 0.25, 0.25)))
-            sphere_shader.set_vec3('aColor', glm.vec3(1.0, 1.0, 0.0))
+            sphere_shader.set_vec3('aColor', get_feedback_color(row, index))
             glDrawElements(GL_TRIANGLES, vertex_data.get_indices_count('sphere'), GL_UNSIGNED_INT, None)
 
     for row in range(12):
@@ -125,6 +137,7 @@ events.on(pygame.KEYDOWN, lambda event: change_selection(6), conditions={'key': 
 
 
 def check_row(event):
+    global current_row
     if 0 in answers[current_row]:
         print('Błąd. Nie wybrano wszystkich wartości z wiersza.')
         # @TODO trigger validation error
@@ -133,24 +146,35 @@ def check_row(event):
     if answers[current_row] == combination:
         print('YOU WIN. Congratulations.')
         # @TODO trigger game end event
+        return
 
-    indexes_to_skip = []
+    indices_to_check = []
 
     for index, selection in enumerate(answers[current_row]):
         if combination[index] == selection:
             feedback[current_row].append(1)
-            indexes_to_skip.append(index)
+            continue
 
-    for index, combination_digit in enumerate(combination):
-        if index not in indexes_to_skip and combination_digit == answers[current_row][index]:
+        indices_to_check.append(index)
+
+    combination_copy = [combination[i] for i in indices_to_check]
+    print('combination_copy:', combination_copy)
+
+    for index in indices_to_check:
+        if answers[current_row][index] in combination_copy:
             feedback[current_row].append(2)
 
-    feedback[current_row].sort()
+    print(feedback[current_row])
+
+    if current_row == 0:
+        print('Game over.')
+        # @TODO trigger gameover event
+        return
+
+    current_row -= 1
 
 
 events.on(pygame.KEYDOWN, check_row, conditions={'key': pygame.K_RETURN})
-
-check_row(None)
 
 glEnable(GL_DEPTH_TEST)
 run()
