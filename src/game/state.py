@@ -1,5 +1,4 @@
-from typing import List, Any
-
+from typing import List
 
 class State:
     combination: List[int]
@@ -47,7 +46,7 @@ class State:
     def get_feedback_digit(self, row: int, col: int):
         return self.get_feedback(row)[col]
 
-    def append_feedback_digit(self, digit: int, row: int=None):
+    def append_feedback_digit(self, digit: int, row: int = None):
         self.feedback[row if row else self.get_current_row()].append(digit)
 
     def get_answer(self, row):
@@ -56,7 +55,7 @@ class State:
     def get_answer_digit(self, row, col):
         return self.get_answer(row)[col]
 
-    def set_answer_digit(self, digit: int, row: int=None, col: int=None):
+    def set_answer_digit(self, digit: int, row: int = None, col: int = None):
         row = row if row else self.get_current_row()
         col = col if col else self.get_selected_index()
         self.answers[row][col] = digit

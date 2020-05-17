@@ -133,7 +133,8 @@ class Text:
         glEnableVertexAttribArray(1)
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), c_void_p(2 * sizeof(GLfloat)))
 
-    def draw(self, shader=get_default_shader()):
+    def draw(self, shader=None):
+        shader = shader if shader else get_default_shader()
         glUseProgram(shader)
 
         glActiveTexture(GL_TEXTURE0)
