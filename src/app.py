@@ -5,6 +5,7 @@ from bootstrap import events, run
 from utils import load_texture, ObjectFactory
 import shaders
 import vertex_data
+import text
 # @TODO replace it with static colors later on
 import random
 
@@ -48,6 +49,7 @@ colors = [
     glm.vec3(0.635, 0.274, 0.070),
     glm.vec3(1.000, 1.000, 0.000)
 ]
+
 
 def get_color(row, col, is_selected=False):
     if answers[row][col]:
@@ -109,6 +111,25 @@ def draw_spheres(event):
 
 
 events.on(events.DRAW, draw_spheres)
+
+texts = [
+    'W, S, A, D - ruch kamerą',
+    'SCROLL UP / SCROLL DOWN - przybliżenie / oddalenie',
+    '1, 2, 3, 4, 5, 6 - wybór wartości dla danej komórki',
+    'SPACJA - zmiana aktywnej komórki',
+    'ENTER - sprawdzenie wartości z danego wiersza'
+]
+
+print(texts)
+
+text_object_factory = lambda text_to_draw, position: text.Text(text_to_draw, position=position, font_size=35,
+                                                               font_color=(1.0, 1.0, 0.0, 1.0))
+text_objects = []
+for index, text_to_draw in enumerate(texts):
+    text_object = text_object_factory(text_to_draw, (0.0, 0.9 - 0.05 * index))
+    text_objects.append(text_object)
+
+events.on(events.DRAW, lambda event: [text_object.draw() for text_object in text_objects])
 
 
 def change_active_cell(event):
@@ -177,4 +198,7 @@ def check_row(event):
 events.on(pygame.KEYDOWN, check_row, conditions={'key': pygame.K_RETURN})
 
 glEnable(GL_DEPTH_TEST)
+# blend is used in GUI texts
+glEnable(GL_BLEND)
+glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 run()
