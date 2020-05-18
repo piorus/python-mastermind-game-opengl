@@ -1,5 +1,6 @@
 import pygame
 
+
 class Keyboard:
     def __init__(self):
         self._watched_inputs = {}
@@ -19,11 +20,13 @@ class Keyboard:
         else:
             self._watched_inputs[input_to_watch.key_code] = [input_to_watch]
 
+
 class InputToWatch:
     def __init__(self, key_code, callback, name):
         self.name = name
         self.key_code = key_code
         self.callback = callback
+
 
 class Mouse:
     def __init__(self):
@@ -45,11 +48,13 @@ class Mouse:
         self.last_x = x_pos
         self.last_y = y_pos
 
+
 class Input:
     M_SCROLL_UP = 4
     M_SCROLL_DOWN = 5
+
     def __init__(self, mouse, keyboard):
-        self.mouse    = mouse
+        self.mouse = mouse
         self.keyboard = keyboard
 
     def process(self, pressed_keys):
@@ -61,3 +66,9 @@ class Input:
     def add_listeners(self, listeners):
         for listener in listeners:
             self.on(*listener)
+
+    def get_mouse(self):
+        return self.mouse
+
+    def get_keyboard(self):
+        return self.keyboard

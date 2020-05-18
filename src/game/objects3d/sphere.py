@@ -13,13 +13,18 @@ class Sphere:
         self.shader = shaders.Shader('shaders/sphere.vert', 'shaders/sphere.frag')
 
         factory = ObjectFactory()
+        vertex_data_container = vertex_data.VertexDataContainer()
+        data = vertex_data_container.load('sphere')
 
         factory \
-            .set_vertices(vertex_data.get_vertices('sphere')) \
-            .set_indices(vertex_data.get_indices('sphere')) \
+            .set_vertices(data.vertices) \
+            .set_indices(data.indices) \
             .set_stride(3 * sizeof(GLfloat)) \
             .set_attrib_pointer(index=0, size=3, type=GL_FLOAT, normalized=GL_FALSE, offset=0)
         self.object = factory.create()
+        self.indices_count = data.indices_count
+
+        data.free()
 
     def draw(
             self,
@@ -41,7 +46,7 @@ class Sphere:
         if show_wireframe:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
-        glDrawElements(GL_TRIANGLES, vertex_data.get_indices_count('sphere'), GL_UNSIGNED_INT, None)
+        glDrawElements(GL_TRIANGLES, self.indices_count, GL_UNSIGNED_INT, None)
 
         if show_wireframe:
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)

@@ -1,135 +1,124 @@
 import utils
 import glm
 from math import pi, sin, cos
-from OpenGL.GL import *
 from OpenGL.GLU import *
 
-data = {}
+SPHERE_STACK_COUNT = 36
+SPHERE_SECTOR_COUNT = 18
+SPHERE_RADIUS = 3
 
-data["cube"] = {
-    "vertices": {
-        "data": [
-            #   positions    texture Coords
-            -0.5, -0.5, -0.5, 0.0, 0.0,
-            0.5, -0.5, -0.5, 1.0, 0.0,
-            0.5, 0.5, -0.5, 1.0, 1.0,
-            0.5, 0.5, -0.5, 1.0, 1.0,
-            -0.5, 0.5, -0.5, 0.0, 1.0,
-            -0.5, -0.5, -0.5, 0.0, 0.0,
 
-            -0.5, -0.5, 0.5, 0.0, 0.0,
-            0.5, -0.5, 0.5, 1.0, 0.0,
-            0.5, 0.5, 0.5, 1.0, 1.0,
-            0.5, 0.5, 0.5, 1.0, 1.0,
-            -0.5, 0.5, 0.5, 0.0, 1.0,
-            -0.5, -0.5, 0.5, 0.0, 0.0,
+class VertexData:
+    def __init__(self):
+        self.is_loaded = False
 
-            -0.5, 0.5, 0.5, 1.0, 0.0,
-            -0.5, 0.5, -0.5, 1.0, 1.0,
-            -0.5, -0.5, -0.5, 0.0, 1.0,
-            -0.5, -0.5, -0.5, 0.0, 1.0,
-            -0.5, -0.5, 0.5, 0.0, 0.0,
-            -0.5, 0.5, 0.5, 1.0, 0.0,
+    def load(self):
+        pass
 
-            0.5, 0.5, 0.5, 1.0, 0.0,
-            0.5, 0.5, -0.5, 1.0, 1.0,
-            0.5, -0.5, -0.5, 0.0, 1.0,
-            0.5, -0.5, -0.5, 0.0, 1.0,
-            0.5, -0.5, 0.5, 0.0, 0.0,
-            0.5, 0.5, 0.5, 1.0, 0.0,
+    def free(self):
+        pass
 
-            -0.5, -0.5, -0.5, 0.0, 1.0,
-            0.5, -0.5, -0.5, 1.0, 1.0,
-            0.5, -0.5, 0.5, 1.0, 0.0,
-            0.5, -0.5, 0.5, 1.0, 0.0,
-            -0.5, -0.5, 0.5, 0.0, 0.0,
-            -0.5, -0.5, -0.5, 0.0, 1.0,
-
-            -0.5, 0.5, -0.5, 0.0, 1.0,
-            0.5, 0.5, -0.5, 1.0, 1.0,
-            0.5, 0.5, 0.5, 1.0, 0.0,
-            0.5, 0.5, 0.5, 1.0, 0.0,
-            -0.5, 0.5, 0.5, 0.0, 0.0,
-            -0.5, 0.5, -0.5, 0.0, 1.0
-        ],
-        "type": GLfloat
-    }
-}
-
-data['plane'] = {
-    "vertices": {
-        "data": [
-            5.0, -0.5, 5.0, 2.0, 0.0,
-            -5.0, -0.5, 5.0, 0.0, 0.0,
-            -5.0, -0.5, -5.0, 0.0, 2.0,
-
-            5.0, -0.5, 5.0, 2.0, 0.0,
-            -5.0, -0.5, -5.0, 0.0, 2.0,
-            5.0, -0.5, -5.0, 2.0, 2.0
-        ],
-        "type": GLfloat
-    }
-}
-
-data["sphere"] = {
-    "vertices": {
-        "data": [],
-        "type": GLfloat
-    },
-    "indices": {
-        "data": [],
-        "type": GLint
-    },
-    "indices_count": 0
-}
 
 # source: http://www.songho.ca/opengl/gl_sphere.html
-stack_count = 36
-sector_count = 18
-stack_step = pi / stack_count
-sector_step = 2 * pi / sector_count
-radius = 3
+class SphereVertexData(VertexData):
+    VERTICES_TYPE = GLfloat
+    INDICES_TYPE = GLint
 
-for i in range(stack_count + 1):
-    stack_angle = pi / 2 - i * stack_step
-    xy = radius * cos(stack_angle)
-    z = radius * sin(stack_angle)
+    def __init__(self):
+        super().__init__()
 
-    k1 = i * (sector_count + 1)
-    k2 = k1 + sector_count + 1
+        self.vertices = []
+        self.vertices_count = 0
+        self.indices = []
+        self.indices_count = 0
 
-    for j in range(sector_count + 1):
-        sector_angle = j * sector_step
-        x = xy * cos(sector_angle)
-        y = xy * sin(sector_angle)
+    def load(self):
+        stack_step = pi / SPHERE_STACK_COUNT
+        sector_step = 2 * pi / SPHERE_SECTOR_COUNT
 
-        data["sphere"]["vertices"]["data"] += [*glm.normalize(glm.vec3(x, y, z))]
+        for i in range(SPHERE_STACK_COUNT + 1):
+            stack_angle = pi / 2 - i * stack_step
+            xy = SPHERE_RADIUS * cos(stack_angle)
+            z = SPHERE_RADIUS * sin(stack_angle)
 
-        if i != 0:
-            data["sphere"]["indices"]["data"] += [k1, k2, k1 + 1]
+            k1 = i * (SPHERE_SECTOR_COUNT + 1)
+            k2 = k1 + SPHERE_SECTOR_COUNT + 1
 
-        if i != stack_count - 1:
-            data["sphere"]["indices"]["data"] += [k1 + 1, k2, k2 + 1]
+            for j in range(SPHERE_SECTOR_COUNT + 1):
+                sector_angle = j * sector_step
+                x = xy * cos(sector_angle)
+                y = xy * sin(sector_angle)
 
-        k1 += 1
-        k2 += 1
+                self.vertices += [*glm.normalize(glm.vec3(x, y, z))]
 
-data["sphere"]["indices_count"] = len(data["sphere"]["indices"]["data"])
+                if i != 0:
+                    self.indices += [k1, k2, k1 + 1]
 
-for k1 in data:
-    for k2 in data[k1]:
-        if isinstance(data[k1][k2], dict):
-            object = data[k1][k2]
-            data[k1][k2] = utils.type_cast(object["data"], object["type"])
+                if i != SPHERE_STACK_COUNT - 1:
+                    self.indices += [k1 + 1, k2, k2 + 1]
+
+                k1 += 1
+                k2 += 1
+
+        self.vertices_count = len(self.vertices)
+        self.indices_count = len(self.indices)
+
+        self.vertices = utils.type_cast(self.vertices, SphereVertexData.VERTICES_TYPE)
+        self.indices = utils.type_cast(self.indices, SphereVertexData.INDICES_TYPE)
+
+        self.is_loaded = True
+
+        return self
+
+    def free(self):
+        self.__init__()
 
 
-def get_vertices(name):
-    return data[name]["vertices"]
+class VertexDataContainer:
+    def __init__(self):
+        self.children = {
+            'sphere': SphereVertexData,
+        }
+
+    def load(self, key):
+        data = self.children[key]().load() if key in self.children else None
+        if not data:
+            raise RuntimeError('Vertex data for %s is not available.' % key)
+
+        return data
 
 
-def get_indices(name):
-    return data[name]["indices"]
-
-
-def get_indices_count(name):
-    return data[name]["indices_count"]
+# data = {}
+#
+# data['plane'] = {
+#     "vertices": {
+#         "data": [
+#             5.0, -0.5, 5.0, 2.0, 0.0,
+#             -5.0, -0.5, 5.0, 0.0, 0.0,
+#             -5.0, -0.5, -5.0, 0.0, 2.0,
+#
+#             5.0, -0.5, 5.0, 2.0, 0.0,
+#             -5.0, -0.5, -5.0, 0.0, 2.0,
+#             5.0, -0.5, -5.0, 2.0, 2.0
+#         ],
+#         "type": GLfloat
+#     }
+# }
+#
+# for k1 in data:
+#     for k2 in data[k1]:
+#         if isinstance(data[k1][k2], dict):
+#             object = data[k1][k2]
+#             data[k1][k2] = utils.type_cast(object["data"], object["type"])
+#
+#
+# def get_vertices(name):
+#     return data[name]["vertices"]
+#
+#
+# def get_indices(name):
+#     return data[name]["indices"]
+#
+#
+# def get_indices_count(name):
+#     return data[name]["indices_count"]

@@ -18,22 +18,6 @@ class Scene:
     def draw(self, event):
         for child in self.children:
             child.draw(event.view, event.projection)
-        #
-        # view = event.view
-        # projection = event.projection
-        #
-        # for row in range(12):
-        #
-        #     for col in range(4):
-        #         is_selected = row == self.state.get_current_row() and col == self.state.get_selected_index()
-        #         model = glm.translate(glm.mat4(1.0), glm.vec3(x_start + col * offset, 0.0, z_start + row * offset))
-        #         self.sphere.draw(
-        #             model,
-        #             view,
-        #             projection,
-        #             self.state.get_color(row, col, is_selected),
-        #             show_wireframe=is_selected
-        #         )
 
     def add_child(self, child):
         self.children.append(child)
