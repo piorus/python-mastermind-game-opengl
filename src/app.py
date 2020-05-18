@@ -9,7 +9,7 @@ import game.model.answer
 import game.objects3d.sphere
 import game.scene
 import game.state
-from bootstrap.input import Input, Mouse, Keyboard
+from bootstrap.input import Input, Mouse
 from bootstrap.events import Events
 from bootstrap.camera import Camera
 
@@ -23,7 +23,7 @@ class App:
     def __init__(self):
         self.window = pygame.display.set_mode(RESOLUTION, pygame.DOUBLEBUF | pygame.OPENGL)
         self.clock = pygame.time.Clock()
-        self.input = Input(Mouse(), Keyboard())
+        self.input = Input(Mouse())
         self.camera = Camera(CAMERA_FRONT)
         self.events = Events()
         self.state = game.state.State()
@@ -60,9 +60,10 @@ class App:
         self.camera.process_mouse_movement(mouse.x_offset, mouse.y_offset)
 
     def register_events(self):
-        self.camera.register_event_listeners(self.input, self.events)
+        # handle mouse movement @todo investigate if this is needed at all, maybe remove class method and register handler for mouse directly?
         self.events.on(pygame.MOUSEMOTION, self.on_mouse_move)
-
+        # register camera events for movement and zooming
+        self.camera.register_event_listeners(self.events)
         # register spacebar as active selection switcher
         self.events.on(pygame.KEYDOWN, lambda event: self.state.change_selected_index(), conditions={'key': pygame.K_SPACE})
         # check answer after pressing return
@@ -92,7 +93,6 @@ class App:
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
             self.events.process(pygame.event.get())
-            self.input.process(pygame.key.get_pressed())
 
             current_frame = pygame.time.get_ticks() / 1000.0
             self.events.post(self.events.DRAW, {
