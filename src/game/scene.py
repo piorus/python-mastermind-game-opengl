@@ -6,14 +6,11 @@ from game.state import State
 class Scene:
     def __init__(
             self,
-            events: Events,
             state: State,
             children: list = None
     ):
         self.state = state
         self.children = children if children else []
-
-        events.on(events.DRAW, self.draw)
 
     def draw(self, event):
         for child in self.children:

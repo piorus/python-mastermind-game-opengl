@@ -27,9 +27,9 @@ class App:
         self.camera = Camera(CAMERA_FRONT)
         self.events = Events()
         self.state = game.state.State()
-        self.logic = game.logic.Logic(events=self.events, state=self.state)
-        self.gui = game.gui.GUI(events=self.events, show_gui=True)
-        self.scene = game.scene.Scene(events=self.events, state=self.state)
+        self.logic = game.logic.Logic(state=self.state)
+        self.gui = game.gui.GUI(show_gui=True)
+        self.scene = game.scene.Scene(state=self.state)
 
         sphere = game.objects3d.sphere.Sphere()
 
@@ -63,8 +63,15 @@ class App:
         self.camera.register_event_listeners(self.input, self.events)
         self.events.on(pygame.MOUSEMOTION, self.on_mouse_move)
 
-        # bind spacebar as active selection switcher
+        # register spacebar as active selection switcher
         self.events.on(pygame.KEYDOWN, lambda event: self.state.change_selected_index(), conditions={'key': pygame.K_SPACE})
+        # check answer after pressing return
+        self.events.on(pygame.KEYDOWN, self.logic.check_row, conditions={'key': pygame.K_RETURN})
+        # draw scene before gui to avoid transparency issues
+        self.events.on(self.events.DRAW, self.scene.draw)
+        # register GUI events
+        self.events.on(self.events.DRAW, lambda event: self.gui.draw())
+        self.events.on(pygame.KEYDOWN, lambda event: self.gui.toggle_visiblity(), conditions={'key': pygame.K_TAB})
 
         # bind keys 1-6 as selection changers
         keys_to_bind = [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6]

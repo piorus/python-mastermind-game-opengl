@@ -5,9 +5,8 @@ from bootstrap.events import Events
 
 
 class Logic:
-    def __init__(self, events: Events, state: State):
+    def __init__(self, state: State):
         self.state = state
-        events.on(pygame.KEYDOWN, self.check_row, conditions={'key': pygame.K_RETURN})
 
     def check_row(self, event):
         current_row = self.state.get_current_row()
