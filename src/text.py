@@ -1,8 +1,11 @@
-#source: https://rusin.work/programming/modern-opengl-text-rendering-in-pygame/
+# source: https://rusin.work/programming/modern-opengl-text-rendering-in-pygame/
 
 import pygame
 from OpenGL.GL import *
 from ctypes import sizeof, c_void_p
+
+from shaders import Shader
+from utils import surface_to_texture
 
 DEFAULT_VERTEX_SHADER = '''
     #version 330 core
@@ -32,75 +35,55 @@ DEFAULT_FRAGMENT_SHADER = '''
     }
 '''
 
-default_shader = None
-
 
 def get_default_shader():
-    global default_shader
-
-    if default_shader:
-        return default_shader
-
-    def _create_shader(shader_type, source):
-        """compile a shader"""
-        shader = glCreateShader(shader_type)
-        glShaderSource(shader, source)
-        glCompileShader(shader)
-        if glGetShaderiv(shader, GL_COMPILE_STATUS) != GL_TRUE:
-            raise RuntimeError(glGetShaderInfoLog(shader))
-
-        return shader
-
-    vertex = _create_shader(GL_VERTEX_SHADER, DEFAULT_VERTEX_SHADER)
-    fragment = _create_shader(GL_FRAGMENT_SHADER, DEFAULT_FRAGMENT_SHADER)
-
-    shader_program = glCreateProgram()
-    glAttachShader(shader_program, vertex)
-    glAttachShader(shader_program, fragment)
-    glBindFragDataLocation(shader_program, 0, "outColor")
-    glLinkProgram(shader_program)
-
-    default_shader = shader_program
+    vertex = Shader.create_shader(GL_VERTEX_SHADER, DEFAULT_VERTEX_SHADER)
+    fragment = Shader.create_shader(GL_FRAGMENT_SHADER, DEFAULT_FRAGMENT_SHADER)
+    shader_program = Shader.create_shader_program(vertex, fragment)
     glUseProgram(shader_program)
     glUniform1i(glGetUniformLocation(shader_program, 'texture1'), 0)
 
-    return default_shader
+    return shader_program
+
+
+def pygameize_color(color):
+    return None if color is None or color[3] == 0.0 else [i * 255 for i in color]
 
 
 class Text:
     def __init__(
             self,
             text,
+            shader,
             position=(0.0, 0.0),
             font_name='dejavusans',
             font_size=60,
             font_color=(1.0, 1.0, 0.0, 1.0),
             bg_color=None
     ):
+        x, y = position
+        self.x = x
+        self.y = y
         self.text = text
-        self.x, self.y = position
         self.font_name = font_name
         self.font_size = font_size
         self.font_color = font_color
         self.bg_color = bg_color
 
+        self.shader = shader
         self.texture = glGenTextures(1)
         self.vbo = glGenBuffers(1)
         self.vao = glGenVertexArrays(1)
         self.ebo = glGenBuffers(1)
 
-        self._setup()
+        self.is_prepared = False
+        self.prepare()
 
-    def _pygameize_color(self, color):
-        return None if color == None or color[3] == 0.0 else [i * 255 for i in color]
-
-    def _setup(self):
+    def prepare(self):
         font = pygame.font.SysFont(self.font_name, self.font_size)
-        surface = font.render(self.text, True, self._pygameize_color(self.font_color),
-                              self._pygameize_color(self.bg_color))
+        surface = font.render(self.text, True, pygameize_color(self.font_color), pygameize_color(self.bg_color))
         # copy surface data to openGL texture
-        self.surface_to_texture(surface, self.texture)
-
+        surface_to_texture(surface, self.texture, True)
         # calc vertex positions
         xres, yres = pygame.display.get_surface().get_size()
         width, height = surface.get_size()
@@ -132,38 +115,24 @@ class Text:
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), c_void_p(0))
         glEnableVertexAttribArray(1)
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), c_void_p(2 * sizeof(GLfloat)))
+        glBindVertexArray(0)
 
-    def draw(self, shader=None):
-        shader = shader if shader else get_default_shader()
-        glUseProgram(shader)
+        self.is_prepared = True
 
+    def draw(self):
+        if not self.is_prepared:
+            return
+
+        glUseProgram(self.shader)
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.texture)
-
         glBindVertexArray(self.vao)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo)
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, None)
-
         glBindVertexArray(0)
 
     def set_text(self, text):
         self.text = text
-        self._setup()
+        self.is_prepared = False
+        self.prepare()
         return self
-
-    def surface_to_texture(self, surface, texture=None, wrap_s=GL_REPEAT, wrap_t=GL_REPEAT, min_filter=GL_LINEAR,
-                           mag_filter=GL_LINEAR):
-        texture = texture if texture else glGenTextures(1)
-        width, height = surface.get_size()
-        data = pygame.image.tostring(surface, 'RGBA', True)
-        glBindTexture(GL_TEXTURE_2D, texture)
-        # textures - wrapping
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t)
-        # textures - filtering
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data)
-        glGenerateMipmap(GL_TEXTURE_2D)
-
-        return texture

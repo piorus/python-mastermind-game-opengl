@@ -1,8 +1,8 @@
+# source: https://rusin.work/programming/modern-opengl-shader-helper-python/
 from OpenGL.GL import *
 import glm
 
 
-# source: https://rusin.work/programming/modern-opengl-shader-helper-python/
 class Shader:
     def __init__(self, vertex_path: str, fragment_path: str):
         print("\n=== Shader Program ===")

@@ -2,16 +2,23 @@ import pygame, os
 from OpenGL.GL import *
 from ctypes import sizeof, c_void_p
 
+
 def type_cast(what, type):
     return (type * len(what))(*what)
 
-class Surface:
-    def __init__(self, surface, flipped=False):
-        self.size = surface.get_size()
-        self.width, self.height = self.size
-        self.data = pygame.image.tostring(surface, 'RGBA', flipped)
 
-def surface_to_texture(surface, texture=None, wrap_s=GL_REPEAT, wrap_t=GL_REPEAT, min_filter=GL_LINEAR, mag_filter=GL_LINEAR):
+def surface_to_texture(
+        surface,
+        texture: int = None,
+        flipped: bool = False,
+        wrap_s=GL_REPEAT,
+        wrap_t=GL_REPEAT,
+        min_filter=GL_LINEAR,
+        mag_filter=GL_LINEAR
+):
+    surface_width, surface_height = surface.get_size()
+    surface_data = pygame.image.tostring(surface, 'RGBA', flipped)
+
     texture = texture if texture else glGenTextures(1)
     glBindTexture(GL_TEXTURE_2D, texture)
     # textures - wrapping
@@ -20,21 +27,40 @@ def surface_to_texture(surface, texture=None, wrap_s=GL_REPEAT, wrap_t=GL_REPEAT
     # textures - filtering
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface.width, surface.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface.data)
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_RGBA,
+        surface_width,
+        surface_height,
+        0,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
+        surface_data
+    )
     glGenerateMipmap(GL_TEXTURE_2D)
 
     return texture
 
+
 def load_texture(image_path, wrap_s=GL_REPEAT, wrap_t=GL_REPEAT, min_filter=GL_LINEAR, mag_filter=GL_LINEAR):
-    surface = Surface(pygame.image.load(image_path), os.path.splitext(image_path)[1] != '.png')
+    return surface_to_texture(
+        pygame.image.load(image_path),
+        flipped=os.path.splitext(image_path)[1] != '.png',
+        wrap_s=wrap_s,
+        wrap_t=wrap_t,
+        min_filter=min_filter,
+        mag_filter=mag_filter
+    )
 
-    return surface_to_texture(surface, wrap_s=wrap_s, wrap_t=wrap_t, min_filter=min_filter, mag_filter=mag_filter)
 
-class ObjectModel:
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
+class OpenGLObject:
+    def __init__(self, vao, vbo):
+        self.vao = vao
+        self.vbo = vbo
 
-class ObjectFactory:
+
+class OpenGLObjectFactory:
     def __init__(self):
         self.vao = None
         self.vbo = None
@@ -100,6 +126,7 @@ class ObjectFactory:
 
         glBindVertexArray(0)
 
-        object_model = ObjectModel(vbo=self.vbo, vao=self.vao)
-        self.__init__() #reset
-        return object_model
+        vao, vbo = self.vao, self.vbo
+        self.__init__()  # reset
+
+        return OpenGLObject(vao=vao, vbo=vbo)

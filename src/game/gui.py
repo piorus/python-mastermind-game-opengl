@@ -8,7 +8,7 @@ default_texts = [
     '1, 2, 3, 4, 5, 6 - wybór wartości dla danej komórki',
     'SPACJA - zmiana aktywnej komórki',
     'ENTER - sprawdzenie wartości z danego wiersza',
-    'R - restart',  # @TODO implement
+    'R - restart',
     'O - sprawdź czy oszust',  # @TODO implement
     'TAB - pokaż / ukryj GUI',  # @TODO implement
 ]
@@ -20,10 +20,13 @@ class GUI:
         self.show_gui = show_gui
         self.text_objects = []
 
+        default_text_shader = text.get_default_shader()
+
         for index, text_to_draw in enumerate(self.texts):
             self.text_objects.append(
                 text.Text(
                     text_to_draw,
+                    default_text_shader,
                     position=(0.0, 0.9 - 0.05 * index),
                     font_size=35,
                     font_color=(1.0, 1.0, 0.0, 1.0)

@@ -5,14 +5,14 @@ from OpenGL.GL import *
 
 import shaders
 import vertex_data
-from utils import ObjectFactory
+from utils import OpenGLObjectFactory
 
 
 class Sphere:
     def __init__(self):
         self.shader = shaders.Shader('shaders/sphere.vert', 'shaders/sphere.frag')
 
-        factory = ObjectFactory()
+        factory = OpenGLObjectFactory()
         vertex_data_container = vertex_data.VertexDataContainer()
         data = vertex_data_container.load('sphere')
 
