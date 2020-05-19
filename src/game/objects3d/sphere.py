@@ -21,6 +21,7 @@ class Sphere:
             .set_indices(data.indices) \
             .set_stride(3 * sizeof(GLfloat)) \
             .set_attrib_pointer(index=0, size=3, type=GL_FLOAT, normalized=GL_FALSE, offset=0)
+
         self.object = factory.create()
         self.indices_count = data.indices_count
 

@@ -53,27 +53,21 @@ class App:
                 )
             )
 
-    def on_mouse_move(self, event):
-        mouse = self.input.get_mouse()
-
-        mouse.on_mouse_move(event)
-        self.camera.process_mouse_movement(mouse.x_offset, mouse.y_offset)
-
     def register_events(self):
-        # handle mouse movement @todo investigate if this is needed at all, maybe remove class method and register handler for mouse directly?
-        self.events.on(pygame.MOUSEMOTION, self.on_mouse_move)
+        mouse = self.input.get_mouse()
+        # handle mouse movement
+        self.events.on(pygame.MOUSEMOTION, mouse.on_mouse_move)
         # register camera events for movement and zooming
-        self.camera.register_event_listeners(self.events)
-        # register spacebar as active selection switcher
+        self.camera.register_event_listeners(self.events, mouse)
+        # register SPACEBAR as active selection switcher
         self.events.on(pygame.KEYDOWN, lambda event: self.state.change_selected_index(), conditions={'key': pygame.K_SPACE})
         # check answer after pressing return
         self.events.on(pygame.KEYDOWN, self.logic.check_row, conditions={'key': pygame.K_RETURN})
         # draw scene before gui to avoid transparency issues
-        self.events.on(self.events.DRAW, self.scene.draw)
-        # register GUI events
-        self.events.on(self.events.DRAW, lambda event: self.gui.draw())
+        self.events.on(Events.DRAW, self.scene.draw)
+        # register gui events
+        self.events.on(Events.DRAW, lambda event: self.gui.draw())
         self.events.on(pygame.KEYDOWN, lambda event: self.gui.toggle_visiblity(), conditions={'key': pygame.K_TAB})
-
         # bind keys 1-6 as selection changers
         keys_to_bind = [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6]
         for index, key in enumerate(keys_to_bind):
@@ -83,6 +77,12 @@ class App:
                 conditions={'key': key},
                 data={'digit': index + 1}
             )
+        # reset game after pressing R
+        self.events.on(pygame.KEYDOWN, lambda event: self.state.reset(), conditions={'key': pygame.K_r})
+        # quit the application after clicking X in the window
+        self.events.on(pygame.QUIT, lambda event: self.quit())
+        # quit the application after pressing ESC key
+        self.events.on(pygame.KEYDOWN, lambda event: self.quit(), conditions={'key': pygame.K_ESCAPE})
 
     def run(self):
         last_frame = 0
@@ -95,7 +95,7 @@ class App:
             self.events.process(pygame.event.get())
 
             current_frame = pygame.time.get_ticks() / 1000.0
-            self.events.post(self.events.DRAW, {
+            self.events.post(Events.DRAW, {
                 'dt': current_frame - last_frame,
                 'resolution': RESOLUTION,
                 'camera': self.camera,
@@ -106,6 +106,11 @@ class App:
 
             pygame.display.flip()
             self.clock.tick(60)
+
+    @staticmethod
+    def quit():
+        pygame.quit()
+        quit()
 
 
 def main():

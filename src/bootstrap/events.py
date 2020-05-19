@@ -37,10 +37,6 @@ class Subject:
                 else:
                     watched_event.callback(event)
 
-class Observer:
-    def __init__(self, observable, events_to_watch):
-        observable.register_events(events_to_watch)
-
 
 class EventToWatch:
     def __init__(self, type, callback, name=None, conditions=None, data=None):
@@ -60,27 +56,12 @@ class Events:
     def __init__(self):
         self.subject = Subject()
 
-        listeners = [
-            (pygame.QUIT, app_quit, 'App::pygameQuit'),
-            (pygame.KEYDOWN, app_quit, 'App::escepeKeyPressed', {'key': pygame.K_ESCAPE})
-        ]
-        self.add_listeners(listeners)
-
     def process(self, events):
         for event in events:
             self.subject.invoke_event_callbacks(event)
-
-    def add_listeners(self, listeners):
-        for listener in listeners:
-            self.on(*listener)
 
     def on(self, type, callback, name=None, conditions=None, data=None):
         self.subject.register_event(EventToWatch(type, callback, name, conditions, data))
 
     def post(self, type, args):
         pygame.event.post(pygame.event.Event(type, args))
-
-
-def app_quit(event):
-    pygame.quit()
-    quit()

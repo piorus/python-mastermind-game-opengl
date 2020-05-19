@@ -1,28 +1,29 @@
 import glm, math
 import pygame
 
-from bootstrap.input import Input
+from bootstrap.input import Mouse
 
-class CameraDefaults:
-    YAW = -90.0
-    PITCH = -90.0
-    SPEED = 25.0
-    SENSIVITY = 0.3
-    ZOOM = 45.0
-
+YAW = -90.0
+PITCH = -90.0
+SPEED = 25.0
+SENSIVITY = 0.3
+ZOOM = 45.0
 
 class Camera:
     def __init__(
             self,
             pos=glm.vec3(0.0, 0.0, 0.0),
             up=glm.vec3(0.0, 1.0, 0.0),
-            yaw=CameraDefaults.YAW,
-            pitch=CameraDefaults.PITCH
+            yaw=YAW,
+            pitch=PITCH
     ):
         self.front = glm.vec3(0.0, 0.0, -1.0)
-        self.movement_speed = CameraDefaults.SPEED
-        self.mouse_sensivity = CameraDefaults.SENSIVITY
-        self.zoom = CameraDefaults.ZOOM
+        self.right = None
+        self.up = None
+
+        self.movement_speed = SPEED
+        self.mouse_sensivity = SENSIVITY
+        self.zoom = ZOOM
 
         self.pos = pos
         self.world_up = up
@@ -52,11 +53,12 @@ class Camera:
 
         self.front = glm.normalize(front)
         # Also re-calculate the right and up vector
-        self.right = glm.normalize(glm.cross(self.front,
-                                             self.world_up))  # normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+        # normalize the vectors, because their length gets closer to 0
+        # the more you look up or down which results in slower movement.
+        self.right = glm.normalize(glm.cross(self.front, self.world_up))
         self.up = glm.normalize(glm.cross(self.right, self.front))
 
-    def register_event_listeners(self, events):
+    def register_event_listeners(self, events, mouse):
         # movement bindings
         events.on(pygame.KEYDOWN, lambda event: self.enable_moving('forward'), conditions={'key': pygame.K_w})
         events.on(pygame.KEYDOWN, lambda event: self.enable_moving('backward'), conditions={'key': pygame.K_s})
@@ -68,8 +70,10 @@ class Camera:
         events.on(pygame.KEYUP, lambda event: self.disable_moving('left'), conditions={'key': pygame.K_a})
         events.on(pygame.KEYUP, lambda event: self.disable_moving('right'), conditions={'key': pygame.K_d})
         # mouse zooming
-        events.on(pygame.MOUSEBUTTONDOWN, lambda event: self.scroll_up(), {'button': Input.M_SCROLL_UP})
-        events.on(pygame.MOUSEBUTTONDOWN, lambda event: self.scroll_down(), {'button': Input.M_SCROLL_DOWN})
+        events.on(pygame.MOUSEBUTTONDOWN, lambda event: self.scroll_up(), conditions={'button': Mouse.M_SCROLL_UP})
+        events.on(pygame.MOUSEBUTTONDOWN, lambda event: self.scroll_down(), conditions={'button': Mouse.M_SCROLL_DOWN})
+        # handle mouse movement
+        events.on(pygame.MOUSEMOTION, lambda event, data: self.mouse_movement(data['mouse']), data={'mouse': mouse})
 
         events.on(events.DRAW, self.on_draw)
 
@@ -92,16 +96,16 @@ class Camera:
         self.front = front
 
     def on_draw(self, event):
-        self.set_movement_speed(CameraDefaults.SPEED * event.dt)
+        self.set_movement_speed(SPEED * event.dt)
 
         if self.moving_forward: self.move_forward()
         if self.moving_backward: self.move_backward()
         if self.moving_left: self.move_left()
         if self.moving_right: self.move_right()
 
-    def process_mouse_movement(self, x_offset, y_offset, constrain_pitch=True):
-        self.yaw += (x_offset * self.mouse_sensivity)
-        self.pitch += (y_offset * self.mouse_sensivity)
+    def mouse_movement(self, mouse, constrain_pitch=True):
+        self.yaw += (mouse.x_offset * self.mouse_sensivity)
+        self.pitch += (mouse.y_offset * self.mouse_sensivity)
 
         if constrain_pitch:
             if self.pitch > 89.0:

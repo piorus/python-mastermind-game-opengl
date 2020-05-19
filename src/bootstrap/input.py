@@ -2,6 +2,9 @@ import pygame
 
 
 class Mouse:
+    M_SCROLL_UP = 4
+    M_SCROLL_DOWN = 5
+
     def __init__(self):
         self.first_time = True
         self.last_x = 0.0
@@ -23,9 +26,6 @@ class Mouse:
 
 
 class Input:
-    M_SCROLL_UP = 4
-    M_SCROLL_DOWN = 5
-
     def __init__(self, mouse):
         self.mouse = mouse
 

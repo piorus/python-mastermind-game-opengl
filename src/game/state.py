@@ -17,6 +17,9 @@ class State:
 
         print('combination:', self.combination)
 
+    def reset(self):
+        self.__init__()
+
     def get_combination(self):
         return self.combination
 
