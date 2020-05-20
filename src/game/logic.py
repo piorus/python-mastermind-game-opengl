@@ -1,7 +1,6 @@
 import pygame
 
 from game.state import State
-from bootstrap.events import Events
 
 
 class Logic:

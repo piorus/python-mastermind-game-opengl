@@ -1,8 +1,11 @@
-import pygame
-import text
-from bootstrap.events import Events
+""""
+This module is used to draw Graphical User Interface on the screen.
+It displays game controls.
+"""
 
-default_texts = [
+import text
+
+DEFAULT_TEXTS = [
     'W, S, A, D - ruch kamerą',
     'SCROLL UP / SCROLL DOWN - przybliżenie / oddalenie',
     '1, 2, 3, 4, 5, 6 - wybór wartości dla danej komórki',
@@ -15,8 +18,14 @@ default_texts = [
 
 
 class GUI:
+    """
+    GUI class containing logic behind drawing of graphical user interface on the screen.
+    It displays list of strings passed to the constructor
+    or DEFAULT_TEXTS in case if no texts are passed.
+    It also contains flag show_gui which determine if GUI is visible at the moment.
+    """
     def __init__(self, texts: list = None, show_gui: bool = False):
-        self.texts = texts if texts else default_texts
+        self.texts = texts if texts else DEFAULT_TEXTS
         self.show_gui = show_gui
         self.text_objects = []
 
@@ -34,9 +43,11 @@ class GUI:
             )
 
     def toggle_visiblity(self):
+        """Toggles GUI visibility"""
         self.show_gui = not self.show_gui
 
     def draw(self):
+        """Draws text lines on the screen"""
         if not self.show_gui:
             return
 
