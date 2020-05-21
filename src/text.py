@@ -1,11 +1,16 @@
-# source: https://rusin.work/programming/modern-opengl-text-rendering-in-pygame/
+"""
+source: https://rusin.work/programming/modern-opengl-text-rendering-in-pygame/
 
-import pygame
-from OpenGL.GL import *
+text module is handling OpenGL text rendering by copying pygame surface into the OpenGL texture.
+"""
+
 from ctypes import sizeof, c_void_p
 
+import pygame
+import OpenGL.GL as GL
+
 from shaders import Shader
-from utils import surface_to_texture
+from utils import surface_to_texture, type_cast
 
 DEFAULT_VERTEX_SHADER = '''
     #version 330 core
@@ -37,20 +42,31 @@ DEFAULT_FRAGMENT_SHADER = '''
 
 
 def get_default_shader():
-    vertex = Shader.create_shader(GL_VERTEX_SHADER, DEFAULT_VERTEX_SHADER)
-    fragment = Shader.create_shader(GL_FRAGMENT_SHADER, DEFAULT_FRAGMENT_SHADER)
+    """
+    Returns default shader program used to render text by compiling
+    DEFAULT_VERTEX_SHADER and DEFAULT_FRAGMENT_SHADER then joining them together.
+    """
+    vertex = Shader.create_shader(GL.GL_VERTEX_SHADER, DEFAULT_VERTEX_SHADER)
+    fragment = Shader.create_shader(GL.GL_FRAGMENT_SHADER, DEFAULT_FRAGMENT_SHADER)
     shader_program = Shader.create_shader_program(vertex, fragment)
-    glUseProgram(shader_program)
-    glUniform1i(glGetUniformLocation(shader_program, 'texture1'), 0)
+    GL.glUseProgram(shader_program)
+    GL.glUniform1i(GL.glGetUniformLocation(shader_program, 'texture1'), 0)
 
     return shader_program
 
 
 def pygameize_color(color):
+    """convert normalized color (0-1) to RGB (0-255)"""
     return None if color is None or color[3] == 0.0 else [i * 255 for i in color]
 
-
+# pylint: disable=too-many-instance-attributes,too-many-arguments
 class Text:
+    """
+    Text class is handling text rendering by copying
+    pygame surface data into the OpenGL texture.
+    Rendering can be handled by any program passed as a constructor argument
+    and it defaults to the shader program listed above.
+    """
     def __init__(
             self,
             text,
@@ -61,9 +77,9 @@ class Text:
             font_color=(1.0, 1.0, 0.0, 1.0),
             bg_color=None
     ):
-        x, y = position
-        self.x = x
-        self.y = y
+        _x, _y = position
+        self._x = _x
+        self._y = _y
         self.text = text
         self.font_name = font_name
         self.font_size = font_size
@@ -71,68 +87,103 @@ class Text:
         self.bg_color = bg_color
 
         self.shader = shader
-        self.texture = glGenTextures(1)
-        self.vbo = glGenBuffers(1)
-        self.vao = glGenVertexArrays(1)
-        self.ebo = glGenBuffers(1)
+        self.texture = GL.glGenTextures(1)
+        self.vbo = GL.glGenBuffers(1)
+        self.vao = GL.glGenVertexArrays(1)
+        self.ebo = GL.glGenBuffers(1)
 
         self.is_prepared = False
         self.prepare()
 
     def prepare(self):
+        """
+        this method prepares text to render in OpenGL context by:
+          1. creating pygame font
+          2. rendering text passed to the constructor using font
+          3. converting pygame surface to OpenGL texture by copying surface data
+                to texture
+          4. calculating text position
+        """
         font = pygame.font.SysFont(self.font_name, self.font_size)
-        surface = font.render(self.text, True, pygameize_color(self.font_color), pygameize_color(self.bg_color))
+        surface = font.render(
+            self.text,
+            True,
+            pygameize_color(self.font_color),
+            pygameize_color(self.bg_color)
+        )
         # copy surface data to openGL texture
         surface_to_texture(surface, self.texture, True)
         # calc vertex positions
-        xres, yres = pygame.display.get_surface().get_size()
+        res_x, res_y = pygame.display.get_surface().get_size()
         width, height = surface.get_size()
-        x1 = width / xres / 2
-        y1 = height / yres / 2
+        offset_x = width / res_x / 2
+        offset_y = height / res_y / 2
 
         vertices = [
-            self.x + x1, self.y + y1, 1.0, 1.0,  # top right
-            self.x + x1, self.y - y1, 1.0, 0.0,  # bottom right
-            self.x - x1, self.y - y1, 0.0, 0.0,  # bottom left
-            self.x - x1, self.y + y1, 0.0, 1.0,  # top left
+            self._x + offset_x, self._y + offset_y, 1.0, 1.0,  # top right
+            self._x + offset_x, self._y - offset_y, 1.0, 0.0,  # bottom right
+            self._x - offset_x, self._y - offset_y, 0.0, 0.0,  # bottom left
+            self._x - offset_x, self._y + offset_y, 0.0, 1.0,  # top left
         ]
-        vertices = (GLfloat * len(vertices))(*vertices)  # cast to GLfloat
+        vertices = type_cast(vertices, GL.GLfloat)
 
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW)
+        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
+        GL.glBufferData(GL.GL_ARRAY_BUFFER, GL.sizeof(vertices), vertices, GL.GL_DYNAMIC_DRAW)
 
         elements = [
             0, 1, 3,
             1, 2, 3
         ]
-        elements = (GLuint * len(elements))(*elements)
+        elements = type_cast(elements, GL.GLuint)
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo)
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_DYNAMIC_DRAW)
+        GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, self.ebo)
+        GL.glBufferData(
+            target=GL.GL_ELEMENT_ARRAY_BUFFER,
+            size=sizeof(elements),
+            data=elements,
+            usage=GL.GL_DYNAMIC_DRAW
+        )
 
-        glBindVertexArray(self.vao)
-        glEnableVertexAttribArray(0)
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), c_void_p(0))
-        glEnableVertexAttribArray(1)
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), c_void_p(2 * sizeof(GLfloat)))
-        glBindVertexArray(0)
+        GL.glBindVertexArray(self.vao)
+        GL.glEnableVertexAttribArray(0)
+        GL.glVertexAttribPointer(
+            index=0,
+            size=2,
+            type=GL.GL_FLOAT,
+            normalized=GL.GL_FALSE,
+            stride=4 * GL.sizeof(GL.GLfloat),
+            pointer=c_void_p(0)
+        )
+        GL.glEnableVertexAttribArray(1)
+        GL.glVertexAttribPointer(
+            index=1,
+            size=2,
+            type=GL.GL_FLOAT,
+            normalized=GL.GL_FALSE,
+            stride=4 * GL.sizeof(GL.GLfloat),
+            pointer=c_void_p(2 * sizeof(GL.GLfloat))
+        )
+        GL.glBindVertexArray(0)
 
         self.is_prepared = True
 
     def draw(self):
+        """draw text on the screen"""
         if not self.is_prepared:
             return
 
-        glUseProgram(self.shader)
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.texture)
-        glBindVertexArray(self.vao)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo)
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, None)
-        glBindVertexArray(0)
+        GL.glUseProgram(self.shader)
+        GL.glActiveTexture(GL.GL_TEXTURE0)
+        GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
+        GL.glBindVertexArray(self.vao)
+        GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, self.ebo)
+        GL.glDrawElements(GL.GL_TRIANGLES, 6, GL.GL_UNSIGNED_INT, None)
+        GL.glBindVertexArray(0)
 
     def set_text(self, text):
+        """set text and copy surface data to the OpenGL texture"""
         self.text = text
         self.is_prepared = False
         self.prepare()
+
         return self

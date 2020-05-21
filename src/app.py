@@ -33,7 +33,7 @@ class App:
     Core of the game application.
     This class creates most of the game objects and
     handles event listeners registration.
-    It also contains main game loop
+    It also contains the main game loop.
     """
     def __init__(self):
         self.window = pygame.display.set_mode(RESOLUTION, pygame.DOUBLEBUF | pygame.OPENGL)
@@ -159,9 +159,9 @@ class App:
 
 def main():
     """
-    Wrapper function executed directly after starting the program
+    Wrapper function executed directly after starting the program.
     It is used to create App class, and to run the application.
-    It also set some of the OpenGL constants used in the game.
+    It also set OpenGL constants used in the game.
     """
     pygame.init()
 

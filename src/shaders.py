@@ -80,45 +80,45 @@ class Shader:
 
     # ------------------------------------------------------------------------
     def set_bool(self, location: str, value: bool):
-        """Set bool value in the location"""
+        """Set bool in the location"""
         GL.glUniform1i(self.get_location(location), glm.value_ptr(value))
 
     # ------------------------------------------------------------------------
     def set_int(self, location: str, value: int):
-        """Set int value in the location"""
+        """Set int in the location"""
         GL.glUniform1i(self.get_location(location), glm.value_ptr(value))
 
     # ------------------------------------------------------------------------
     def set_float(self, location: str, value: float):
-        """Set float value in the location"""
+        """Set float in the location"""
         GL.glUniform1f(self.get_location(location), glm.value_ptr(value))
 
     # ------------------------------------------------------------------------
     def set_vec2(self, location: str, value: glm.vec2):
-        """Set 2-dimensional vector value in the location"""
+        """Set 2-dimensional vector in the location"""
         GL.glUniform2fv(self.get_location(location), 1, glm.value_ptr(value))
 
     # ------------------------------------------------------------------------
     def set_vec3(self, location: str, value: glm.vec3):
-        """Set 3-dimensional vector value in the location"""
+        """Set 3-dimensional vector in the location"""
         GL.glUniform3fv(self.get_location(location), 1, glm.value_ptr(value))
 
     # ------------------------------------------------------------------------
     def set_vec4(self, location: str, value: glm.vec4):
-        """Set 4-dimensional vector value in the location"""
+        """Set 4-dimensional vector in the location"""
         GL.glUniform4fv(self.get_location(location), 1, glm.value_ptr(value))
 
     # ------------------------------------------------------------------------
     def set_mat2(self, location: str, mat: glm.mat2):
-        """Set 2x2 matrix value in the location"""
+        """Set 2x2 matrix in the location"""
         GL.glUniformMatrix2fv(self.get_location(location), 1, GL.GL_FALSE, glm.value_ptr(mat))
 
     # ------------------------------------------------------------------------
     def set_mat3(self, location: str, mat: glm.mat3):
-        """Set 3x3 matrix value in the location"""
+        """Set 3x3 matrix in the location"""
         GL.glUniformMatrix3fv(self.get_location(location), 1, GL.GL_FALSE, glm.value_ptr(mat))
 
     # ------------------------------------------------------------------------
     def set_mat4(self, location: str, mat: glm.mat4):
-        """Set 4x4 matrix value in the location"""
+        """Set 4x4 matrix in the location"""
         GL.glUniformMatrix4fv(self.get_location(location), 1, GL.GL_FALSE, glm.value_ptr(mat))
