@@ -1,9 +1,23 @@
+"""
+This module contains Answer class which is used to render single row of the answers.
+"""
+
 import glm
+
 from game.state import State
 from game.objects3d.sphere import Sphere
 
 
 class Answer:
+    """
+    Answer class is used to render 4 colorized spheres representing answers for the given row.
+
+    Colors depend of multiple factors listed below:
+      1. white - default color for inactive and unselected answer digit
+      2. green - color of the currently active answer digit
+            (color selection after pressing 1-6 will apply to this sphere)
+      3. Answer.SELECTION_COLORS[0-5] - color of the selected answer digit
+    """
     ACTIVE_COLOR = glm.vec3(0.0, 1.0, 0.0)
     INACTIVE_COLOR = glm.vec3(1.0, 1.0, 1.0)
     # got colors from: https://www.random.org/colors/hex
@@ -17,6 +31,7 @@ class Answer:
         glm.vec3(1.000, 1.000, 0.000)
     ]
 
+    # pylint: disable=too-many-arguments
     def __init__(
             self,
             row: int,
@@ -33,15 +48,21 @@ class Answer:
 
     def draw(
             self,
-            view: glm.vec3,
-            projection: glm.vec3
+            view: glm.mat4,
+            projection: glm.mat4
     ):
-        x_start, y_start, z_start = self.start_pos
+        """
+        Draw answers on the screen using view and projection matrices.
+
+        :param view: 4x4 view matrix
+        :param projection: 4x4 projection matrix
+        """
+        start_x, start_z = self.start_pos.xz
 
         for col in range(4):
-            is_selected = self.is_selected(self.row, col)
-            answer_x = x_start + col * self.offset
-            answer_z = z_start + self.row * self.offset
+            is_active = self.is_active(self.row, col)
+            answer_x = start_x + col * self.offset
+            answer_z = start_z + self.row * self.offset
 
             model = glm.translate(glm.mat4(1.0), glm.vec3(answer_x, 0.0, answer_z))
 
@@ -49,15 +70,32 @@ class Answer:
                 model,
                 view,
                 projection,
-                self.get_color(self.row, col, is_selected),
-                show_wireframe=is_selected
+                self.get_color(self.row, col, is_active),
+                show_wireframe=is_active
             )
 
-    def is_selected(self, row: int, col: int):
-        return row == self.state.get_current_row() and col == self.state.get_selected_index()
+    def is_active(self, row: int, col: int):
+        """
+        Check if sphere is currently active.
 
-    def get_color(self, row, col, is_selected=False):
+        Activated sphere color can be changed by pressing 1-6.
+
+        :param row: row index of the sphere
+        :param col: column index of the sphere
+        :return:
+        """
+        return row == self.state.current_row and col == self.state.get_active_index()
+
+    def get_color(self, row: int, col: int, is_active: bool = False):
+        """
+        Get color of the sphere.
+
+        :param row: row index of the sphere
+        :param col: column index of the sphere
+        :param is_active: flag that determine if sphere is currently active
+        :return: glm.vec3 vector containing sphere color
+        """
         if self.state.get_answer_digit(row, col):
             return Answer.SELECTION_COLORS[self.state.get_answer_digit(row, col) - 1]
 
-        return Answer.ACTIVE_COLOR if is_selected else Answer.INACTIVE_COLOR
+        return Answer.ACTIVE_COLOR if is_active else Answer.INACTIVE_COLOR

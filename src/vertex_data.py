@@ -1,17 +1,28 @@
-import utils
-import glm
+"""
+Vertices and indices data of the game 3D objects.
+
+source: http://www.songho.ca/opengl/gl_sphere.html
+"""
+
 from math import pi, sin, cos
-from OpenGL.GLU import *
+
+import glm
+import OpenGL.GLU as GLU
+
+import utils
 
 SPHERE_STACK_COUNT = 36
 SPHERE_SECTOR_COUNT = 18
 SPHERE_RADIUS = 3
 
 
-# source: http://www.songho.ca/opengl/gl_sphere.html
+# pylint: disable=too-few-public-methods
 class SphereVertexData:
-    VERTICES_TYPE = GLfloat
-    INDICES_TYPE = GLint
+    """
+    Sphere vertices and indices casted to GLfloat and Glint.
+    """
+    VERTICES_TYPE = GLU.GLfloat
+    INDICES_TYPE = GLU.GLint
 
     def __init__(self):
         super().__init__()
@@ -22,32 +33,37 @@ class SphereVertexData:
         self.indices_count = 0
 
     def load(self):
+        """
+        Generate sphere vertices and indices
+        using predefined stack count, sector count and radius.
+        Then, cast it to type supported by OpenGL.
+        """
         stack_step = pi / SPHERE_STACK_COUNT
         sector_step = 2 * pi / SPHERE_SECTOR_COUNT
 
         for i in range(SPHERE_STACK_COUNT + 1):
             stack_angle = pi / 2 - i * stack_step
-            xy = SPHERE_RADIUS * cos(stack_angle)
-            z = SPHERE_RADIUS * sin(stack_angle)
+            _xy = SPHERE_RADIUS * cos(stack_angle)
+            _z = SPHERE_RADIUS * sin(stack_angle)
 
-            k1 = i * (SPHERE_SECTOR_COUNT + 1)
-            k2 = k1 + SPHERE_SECTOR_COUNT + 1
+            k_1 = i * (SPHERE_SECTOR_COUNT + 1)
+            k_2 = k_1 + SPHERE_SECTOR_COUNT + 1
 
             for j in range(SPHERE_SECTOR_COUNT + 1):
                 sector_angle = j * sector_step
-                x = xy * cos(sector_angle)
-                y = xy * sin(sector_angle)
+                _x = _xy * cos(sector_angle)
+                _y = _xy * sin(sector_angle)
 
-                self.vertices += [*glm.normalize(glm.vec3(x, y, z))]
+                self.vertices += [*glm.normalize(glm.vec3(_x, _y, _z))]
 
                 if i != 0:
-                    self.indices += [k1, k2, k1 + 1]
+                    self.indices += [k_1, k_2, k_1 + 1]
 
                 if i != SPHERE_STACK_COUNT - 1:
-                    self.indices += [k1 + 1, k2, k2 + 1]
+                    self.indices += [k_1 + 1, k_2, k_2 + 1]
 
-                k1 += 1
-                k2 += 1
+                k_1 += 1
+                k_2 += 1
 
         self.vertices_count = len(self.vertices)
         self.indices_count = len(self.indices)

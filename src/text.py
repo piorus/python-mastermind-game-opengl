@@ -56,7 +56,12 @@ def get_default_shader():
 
 
 def pygameize_color(color):
-    """convert normalized color (0-1) to RGB (0-255)"""
+    """
+    Convert normalized color (0-1) to RGB (0-255).
+
+    :param color: normalized color (0-1, 0-1, 0-1)
+    :return: RGB color (0-255, 0-255, 0-255)
+    """
     return None if color is None or color[3] == 0.0 else [i * 255 for i in color]
 
 # pylint: disable=too-many-instance-attributes,too-many-arguments
@@ -64,8 +69,8 @@ class Text:
     """
     Text class is handling text rendering by copying
     pygame surface data into the OpenGL texture.
-    Rendering can be handled by any program passed as a constructor argument
-    and it defaults to the shader program listed above.
+    Rendering can be handled by any shader program
+    passed as a constructor argument.
     """
     def __init__(
             self,
@@ -97,11 +102,11 @@ class Text:
 
     def prepare(self):
         """
-        this method prepares text to render in OpenGL context by:
+        Prepare text to render in OpenGL context by:
           1. creating pygame font
           2. rendering text passed to the constructor using font
           3. converting pygame surface to OpenGL texture by copying surface data
-                to texture
+             to the texture
           4. calculating text position
         """
         font = pygame.font.SysFont(self.font_name, self.font_size)
@@ -168,7 +173,9 @@ class Text:
         self.is_prepared = True
 
     def draw(self):
-        """draw text on the screen"""
+        """
+        Draw text on the screen.
+        """
         if not self.is_prepared:
             return
 
@@ -180,8 +187,13 @@ class Text:
         GL.glDrawElements(GL.GL_TRIANGLES, 6, GL.GL_UNSIGNED_INT, None)
         GL.glBindVertexArray(0)
 
-    def set_text(self, text):
-        """set text and copy surface data to the OpenGL texture"""
+    def set_text(self, text: str):
+        """
+        Set text and copy surface data to the OpenGL texture.
+
+        :param text: new text value
+        :return:
+        """
         self.text = text
         self.is_prepared = False
         self.prepare()

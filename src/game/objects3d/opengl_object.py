@@ -3,12 +3,14 @@ from ctypes import sizeof, c_void_p
 
 import OpenGL.GL as GL
 
-# pylint: disable=too-many-arguments,too-few-public-methods
+
+# pylint: disable=too-many-arguments
 class OpenGLObject:
     """
     OpenGLObject is setting up initial object properiies
     and buffer vertices/indices data straight to the GPU.
     """
+
     def __init__(
             self,
             vao=None,
@@ -29,39 +31,14 @@ class OpenGLObject:
         self.indices = indices
         self.attrib_pointers = attrib_pointers
 
-    def set_vertices(self, vertices):
-        """vertices setter"""
-        self.vertices = vertices
-        return self
-
-    def set_indices(self, indices):
-        """indices setter"""
-        self.indices = indices
-        return self
-
-    def set_stride(self, stride):
-        """stride setter"""
-        self.stride = stride
-        return self
-
-    def set_vbo(self, vbo):
-        """vbo setter"""
-        self.vbo = vbo
-        return self
-
-    def set_vao(self, vao):
-        """vao setter"""
-        self.vao = vao
-        return self
-
-    def set_attrib_pointer(self, index, size, _type, normalized, offset):
+    def set_attrib_pointer(self, index, size, attrib_type, normalized, offset):
         """attrib_pointer setter"""
         if not self.stride:
             raise RuntimeError('Please set_stride(stride) before set_attrib_pointer().')
         self.attrib_pointers.append({
             'index': index,
             'size': size,
-            'type': _type,
+            'type': attrib_type,
             'normalized': normalized,
             'stride': self.stride,
             'offset': c_void_p(offset * sizeof(GL.GLfloat))

@@ -19,10 +19,10 @@ DEFAULT_TEXTS = [
 
 class GUI:
     """
-    GUI class containing logic behind drawing of graphical user interface on the screen.
+    GUI class contains logic behind drawing of graphical user interface on the screen.
     It displays list of strings passed to the constructor
     or DEFAULT_TEXTS in case if no texts are passed.
-    It also contains flag show_gui which determine if GUI is visible at the moment.
+    It also have a show_gui flag that determines if GUI is visible at the moment.
     """
     def __init__(self, texts: list = None, show_gui: bool = False):
         self.texts = texts if texts else DEFAULT_TEXTS

@@ -1,4 +1,5 @@
 """Sphere class"""
+from ctypes import sizeof
 
 import OpenGL.GL as GL
 import glm
@@ -18,33 +19,43 @@ class Sphere(OpenGLObject):
     def __init__(self):
         super().__init__()
 
-        self.shader = shaders.Shader('shaders/sphere.vert', 'shaders/sphere.frag')
         data = SphereVertexData().load()
 
-        self.set_vertices(data.vertices)
-        self.set_indices(data.indices)
-        self.set_stride(3 * GL.sizeof(GL.GLfloat))
+        self.vertices = data.vertices
+        self.indices = data.indices
+        self.indices_count = data.indices_count
+        self.stride = 3 * sizeof(GL.GLfloat)
+        self.shader = shaders.Shader('shaders/sphere.vert', 'shaders/sphere.frag')
         self.set_attrib_pointer(
             index=0,
             size=3,
-            _type=GL.OpenGL.GL.GL_FLOAT,
+            attrib_type=GL.GL_FLOAT,
             normalized=GL.GL_FALSE,
             offset=0
         )
-        self.indices_count = data.indices_count
 
         self.buffer_data_to_gpu()
 
     def draw(
             self,
-            model: glm.vec3,
-            view: glm.vec3,
-            projection: glm.vec3,
+            model: glm.mat4,
+            view: glm.mat4,
+            projection: glm.mat4,
             color: glm.vec3,
             scale: glm.vec3 = glm.vec3(1.0, 1.0, 1.0),
             show_wireframe: bool = False
     ):
-        """draw a sphere using view projection model"""
+        """
+        Draw a sphere using model, view and projection matrices.
+
+        :param model: 4x4 model matrix
+        :param view: 4x4 view matrix
+        :param projection: 4x4 projection matrix
+        :param color: glm.vec3 representing color of the sphere
+        :param scale: glm.vec3 representing scale of the sphere
+        :param show_wireframe: flag that determine if wireframe should be displayed
+        :return:
+        """
 
         GL.glBindVertexArray(self.vao)
 

@@ -1,9 +1,28 @@
+"""
+This module contains Feedback class which is used to render single row of the feedback.
+
+Feedback is only rendered for the checked rows
+and feedback rows displayed are equal to the number of checked rows.
+(12th feedback row displayed = GAME OVER)
+"""
+
 import glm
+
 from game.state import State
 from game.objects3d.sphere import Sphere
 
 
 class Feedback:
+    """
+    Feedback class is used to represent feedback after checking row values.
+
+    Feedback (based on Mastermind rules) depends on multiple of factors:
+      - add 1 red sphere for each of the correctly selected answer digit
+      - add 1 white sphere for each of the answer digits that are not correctly placed,
+        but are in the combination
+    """
+
+    # pylint: disable=too-many-arguments
     def __init__(
             self,
             row: int,
@@ -21,15 +40,22 @@ class Feedback:
 
     def draw(
             self,
-            view: glm.vec3,
-            projection: glm.vec3
+            view: glm.mat4,
+            projection: glm.mat4
     ):
+        """
+        Draw feedback spheres for the given row on the screen.
+
+        :param view: 4x4 view matrix
+        :param projection: 4x4 projection matrix
+        """
         for index, feedback_pos in enumerate(self.get_points()):
             if not self.is_visible(index):
                 continue
 
             feedback_x, feedback_z = feedback_pos
             model = glm.translate(glm.mat4(1.0), glm.vec3(feedback_x, 0.0, feedback_z))
+
             self.sphere.draw(
                 model,
                 view,
@@ -39,14 +65,20 @@ class Feedback:
             )
 
     def get_points(self):
-        x_start, y_start, z_start = self.start_pos
+        """
+        Get position of the feedback digits on the screen.
 
-        x1 = x_start + 10
-        x2 = x1 + self.feedback_offset
-        z1 = z_start - self.feedback_offset / 2 + self.row * self.answers_offset
-        z2 = z1 + self.feedback_offset
+        This function helps to represent feedback similarly to the board game version.
+        :return: list of tuples that contain each of the feedback digit positions
+        """
+        start_x, start_z = self.start_pos.xz
 
-        return [(x1, z1), (x2, z1), (x1, z2), (x2, z2)]
+        x_1 = start_x + 10
+        x_2 = x_1 + self.feedback_offset
+        z_1 = start_z - self.feedback_offset / 2 + self.row * self.answers_offset
+        z_2 = z_1 + self.feedback_offset
+
+        return [(x_1, z_1), (x_2, z_1), (x_1, z_2), (x_2, z_2)]
 
     def is_visible(self, index):
         return len(self.state.get_feedback(self.row)) >= index + 1 \

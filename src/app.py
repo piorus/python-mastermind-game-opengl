@@ -44,7 +44,7 @@ class App:
         self.state = game.state.State()
         self.logic = game.logic.Logic(state=self.state)
         self.gui = game.gui.GUI(show_gui=True)
-        self.scene = game.scene.Scene(state=self.state)
+        self.scene = game.scene.Scene()
 
         sphere = game.objects3d.sphere.Sphere()
 
@@ -78,11 +78,15 @@ class App:
         # register SPACEBAR as active selection switcher
         self.events.on(
             pygame.KEYDOWN,
-            lambda event: self.state.change_selected_index(),
+            lambda event: self.state.change_active_index(),
             conditions={'key': pygame.K_SPACE}
         )
         # check answer after pressing return
-        self.events.on(pygame.KEYDOWN, self.logic.check_row, conditions={'key': pygame.K_RETURN})
+        self.events.on(
+            pygame.KEYDOWN,
+            lambda event: self.logic.check_row(),
+            conditions={'key': pygame.K_RETURN}
+        )
         # draw scene before gui to avoid transparency issues
         self.events.on(Events.DRAW, self.scene.draw)
         # register gui events

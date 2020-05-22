@@ -1,15 +1,5 @@
-import glm
-from bootstrap.events import Events
-from game.state import State
-
-
 class Scene:
-    def __init__(
-            self,
-            state: State,
-            children: list = None
-    ):
-        self.state = state
+    def __init__(self, children: list = None):
         self.children = children if children else []
 
     def draw(self, event):
