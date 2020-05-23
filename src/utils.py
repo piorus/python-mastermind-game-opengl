@@ -99,3 +99,7 @@ def load_texture(
         min_filter=min_filter,
         mag_filter=mag_filter
     )
+
+
+def combination_to_str(combination: list):
+    return "".join([str(digit) for digit in combination])

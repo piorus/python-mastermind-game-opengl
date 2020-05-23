@@ -4,52 +4,56 @@ It displays game controls.
 """
 
 import text
-
-DEFAULT_TEXTS = [
-    'W, S, A, D - ruch kamerą',
-    'SCROLL UP / SCROLL DOWN - przybliżenie / oddalenie',
-    '1, 2, 3, 4, 5, 6 - wybór wartości dla danej komórki',
-    'SPACJA - zmiana aktywnej komórki',
-    'ENTER - sprawdzenie wartości z danego wiersza',
-    'R - restart',
-    'O - sprawdź czy oszust',  # @TODO implement
-    'TAB - pokaż / ukryj GUI',  # @TODO implement
-]
+from game.gui_child.controls import Controls
+from game.gui_child.game_result import GameResult
 
 
-class GUI:
+class Gui:
     """
     GUI class contains logic behind drawing of graphical user interface on the screen.
     It displays list of strings passed to the constructor
     or DEFAULT_TEXTS in case if no texts are passed.
     It also have a show_gui flag that determines if GUI is visible at the moment.
     """
-    def __init__(self, texts: list = None, show_gui: bool = False):
-        self.texts = texts if texts else DEFAULT_TEXTS
-        self.show_gui = show_gui
-        self.text_objects = []
 
+    def __init__(self):
         default_text_shader = text.get_default_shader()
 
-        for index, text_to_draw in enumerate(self.texts):
-            self.text_objects.append(
-                text.Text(
-                    text_to_draw,
-                    default_text_shader,
-                    position=(0.0, 0.9 - 0.05 * index),
-                    font_size=35,
-                    font_color=(1.0, 1.0, 0.0, 1.0)
-                )
-            )
+        self.controls = Controls(shader=default_text_shader)
 
-    def toggle_visiblity(self):
-        """Toggles GUI visibility"""
-        self.show_gui = not self.show_gui
+        self.game_over = GameResult(
+            shader=default_text_shader,
+            heading_text='PRZEGRAŁEŚ',
+            heading_color=(1.0, 0.0, 0.0, 1.0),
+        )
+
+        self.game_won = GameResult(
+            shader=default_text_shader,
+            heading_text='WYGRAŁEŚ! GRATULACJE.',
+            heading_color=(0.0, 1.0, 0.0, 1.0),
+        )
+
+        self.children = [self.game_over, self.game_won, self.controls]
 
     def draw(self):
         """Draws text lines on the screen"""
-        if not self.show_gui:
-            return
+        for child in self.children:
+            if child.visible:
+                child.draw()
 
-        for text_object in self.text_objects:
-            text_object.draw()
+    def toggle_controls_visibility(self):
+        self.controls.toggle_visiblity()
+
+    def hide_results(self):
+        if self.game_over.visible:
+            self.game_over.hide()
+        if self.game_won.visible:
+            self.game_won.hide()
+
+    def on_game_won(self, combination):
+        self.game_won.set_combination(combination)
+        self.game_won.show()
+
+    def on_game_over(self, combination):
+        self.game_over.set_combination(combination)
+        self.game_over.show()

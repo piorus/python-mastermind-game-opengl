@@ -1,7 +1,7 @@
 """state module"""
 
 from typing import List
-
+from events import Events, post
 
 class State:
     """
@@ -31,6 +31,7 @@ class State:
     def reset(self):
         """Game reset."""
         self.__init__()
+        post(Events.GAME_RESET, {})
 
     def get_active_index(self):
         """Return currently activated index."""

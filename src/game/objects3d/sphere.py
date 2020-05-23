@@ -56,9 +56,6 @@ class Sphere(OpenGLObject):
         :param show_wireframe: flag that determine if wireframe should be displayed
         :return:
         """
-
-        GL.glBindVertexArray(self.vao)
-
         self.shader.use()
         self.shader.set_mat4('model', glm.scale(model, scale))
         self.shader.set_mat4('view', view)
@@ -67,6 +64,8 @@ class Sphere(OpenGLObject):
 
         if show_wireframe:
             GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE)
+
+        GL.glBindVertexArray(self.vao)
 
         GL.glDrawElements(
             GL.GL_TRIANGLES,

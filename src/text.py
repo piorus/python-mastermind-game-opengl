@@ -135,17 +135,17 @@ class Text:
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
         GL.glBufferData(GL.GL_ARRAY_BUFFER, GL.sizeof(vertices), vertices, GL.GL_DYNAMIC_DRAW)
 
-        elements = [
+        indices = [
             0, 1, 3,
             1, 2, 3
         ]
-        elements = type_cast(elements, GL.GLuint)
+        indices = type_cast(indices, GL.GLuint)
 
         GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, self.ebo)
         GL.glBufferData(
             target=GL.GL_ELEMENT_ARRAY_BUFFER,
-            size=sizeof(elements),
-            data=elements,
+            size=sizeof(indices),
+            data=indices,
             usage=GL.GL_DYNAMIC_DRAW
         )
 
@@ -197,5 +197,3 @@ class Text:
         self.text = text
         self.is_prepared = False
         self.prepare()
-
-        return self

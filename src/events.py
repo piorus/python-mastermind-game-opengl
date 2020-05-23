@@ -92,6 +92,10 @@ class Events:
     - Events.DRAW - executed in the each iteration of main game loop
     """
     DRAW = pygame.USEREVENT
+    GAME_OVER = pygame.USEREVENT + 1
+    GAME_WON = pygame.USEREVENT + 2
+    GAME_RESET = pygame.USEREVENT + 3
+    VALIDATION_ERROR = pygame.USEREVENT + 4
 
     def __init__(self):
         self.subject = Subject()

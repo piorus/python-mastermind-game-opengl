@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
 import glm
 import pygame
-import OpenGL.GL as gl
+import OpenGL.GL as GL
 
 import game.gui
 import game.logic
@@ -47,7 +47,7 @@ class App:
         self.events = Events()
         self.state = game.state.State()
         self.logic = game.logic.Logic(state=self.state)
-        self.gui = game.gui.GUI(show_gui=True)
+        self.gui = game.gui.Gui()
         self.scene = game.scene.Scene()
 
         sphere = game.objects3d.sphere.Sphere()
@@ -81,7 +81,7 @@ class App:
         # register SPACEBAR as active selection switcher
         self.events.on(
             pygame.KEYDOWN,
-            lambda event: self.state.change_active_index(),
+            lambda event: self.logic.change_active_index(),
             conditions={'key': pygame.K_SPACE}
         )
         # check answer after pressing return
@@ -93,18 +93,18 @@ class App:
         # draw scene before gui to avoid transparency issues
         self.events.on(Events.DRAW, self.scene.draw)
         # register gui events
-        self.events.on(Events.DRAW, lambda event: self.gui.draw())
         self.events.on(
             pygame.KEYDOWN,
-            lambda event: self.gui.toggle_visiblity(),
+            lambda event: self.gui.toggle_controls_visibility(),
             conditions={'key': pygame.K_TAB}
         )
+        self.events.on(Events.DRAW, lambda event: self.gui.draw())
         # bind keys 1-6 as selection changers
         keys_to_bind = [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6]
         for index, key in enumerate(keys_to_bind):
             self.events.on(
                 pygame.KEYDOWN,
-                lambda event, data: self.state.set_answer_digit(data['digit']),
+                lambda event, data: self.logic.set_answer_digit(data['digit']),
                 conditions={'key': key},
                 data={'digit': index + 1}
             )
@@ -114,6 +114,12 @@ class App:
             lambda event: self.state.reset(),
             conditions={'key': pygame.K_r}
         )
+        self.events.on(Events.GAME_RESET, lambda event: self.gui.hide_results())
+        self.events.on(Events.GAME_WON, lambda event: self.gui.on_game_won(event.combination))
+        # self.events.on(Events.GAME_WON, lambda event: self.state.disable_input())
+        self.events.on(Events.GAME_OVER, lambda event: self.gui.on_game_over(event.combination))
+        # self.events.on(Events.GAME_OVER, lambda event: self.state.disable_input())
+
         # quit the application after clicking X in the window
         self.events.on(pygame.QUIT, lambda event: self.quit())
         # quit the application after pressing ESC key
@@ -130,8 +136,8 @@ class App:
         aspect_ratio = RESOLUTION[0] / RESOLUTION[1]
 
         while True:
-            gl.glClearColor(0.0, 0.0, 0.0, 1.0)
-            gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
+            GL.glClearColor(0.0, 0.0, 0.0, 1.0)
+            GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
             self.events.process(pygame.event.get())
 
@@ -174,9 +180,9 @@ def main():
 
     app = App()
 
-    gl.glEnable(gl.GL_DEPTH_TEST)
-    gl.glEnable(gl.GL_BLEND)  # blend is used in GUI texts
-    gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+    GL.glEnable(GL.GL_DEPTH_TEST)
+    GL.glEnable(GL.GL_BLEND)  # blend is used in GUI texts
+    GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
 
     app.register_events()
     app.run()
