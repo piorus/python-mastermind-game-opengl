@@ -5,6 +5,9 @@ and register game events.
 This is the place where main game loop is located (run() method).
 """
 import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
 import glm
 import pygame
@@ -17,9 +20,9 @@ import game.model.answer
 import game.objects3d.sphere
 import game.scene
 import game.state
-from bootstrap.mouse import Mouse
-from bootstrap.events import Events, post
-from bootstrap.camera import Camera
+from mouse import Mouse
+from events import Events, post
+from camera import Camera
 
 RESOLUTION = (1024, 768)
 CAMERA_FRONT = glm.vec3(10.0, 40.0, 15.0)
@@ -35,6 +38,7 @@ class App:
     handles event listeners registration.
     It also contains the main game loop.
     """
+
     def __init__(self):
         self.window = pygame.display.set_mode(RESOLUTION, pygame.DOUBLEBUF | pygame.OPENGL)
         self.clock = pygame.time.Clock()

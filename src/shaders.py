@@ -3,6 +3,9 @@ source: https://rusin.work/programming/modern-opengl-shader-helper-python/
 
 This module contains Shader class, which is used to handle GLSL shaders.
 """
+import os
+import sys
+
 import OpenGL.GL as GL
 import glm
 
@@ -78,7 +81,7 @@ class Shader:
         :return: source file content
         """
         print("Loading shader source from %s..." % path)
-        with open(path, 'r') as file:
+        with open(os.path.join(os.path.dirname(sys.argv[0]), path), 'r') as file:
             return file.read()
 
     def use(self):

@@ -5,7 +5,7 @@ import math
 import glm
 import pygame
 
-from bootstrap.mouse import Mouse
+from mouse import Mouse
 
 YAW = -90.0
 PITCH = -90.0
