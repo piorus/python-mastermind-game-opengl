@@ -1,15 +1,33 @@
-import glm, math
+"""camera module"""
+
+import math
+
+import glm
 import pygame
 
-from bootstrap.input import Mouse
+from bootstrap.mouse import Mouse
 
 YAW = -90.0
 PITCH = -90.0
 SPEED = 25.0
 SENSIVITY = 0.3
 ZOOM = 45.0
+MOVEMENT_BINDINGS = {
+    'forward': pygame.K_w,
+    'backward': pygame.K_s,
+    'left': pygame.K_a,
+    'right': pygame.K_d
+}
 
+
+# pylint: disable=too-many-instance-attributes
 class Camera:
+    """
+    Camera class is used to simulate camera in the game.
+    It supports mouse movement and scrolling.
+    Camera position can be changed using W, S, A, D keys.
+    """
+
     def __init__(
             self,
             pos=glm.vec3(0.0, 0.0, 0.0),
@@ -19,7 +37,7 @@ class Camera:
     ):
         self.front = glm.vec3(0.0, 0.0, -1.0)
         self.right = None
-        self.up = None
+        self.up = None  # pylint: disable=invalid-name
 
         self.movement_speed = SPEED
         self.mouse_sensivity = SENSIVITY
@@ -38,12 +56,24 @@ class Camera:
         self.update_camera_vectors()
 
     def enable_moving(self, direction):
+        """
+        Enable moving in given direction.
+
+        :param direction: direction that camera should move to
+        """
         setattr(self, 'moving_%s' % direction, True)
 
     def disable_moving(self, direction):
+        """
+        Disable moving in the given direction
+
+        :param direction: direction that camera should stop moving to
+        """
         setattr(self, 'moving_%s' % direction, False)
 
     def update_camera_vectors(self):
+        """Recalculate camera vectors."""
+
         # calculate the new front vector
         front = glm.vec3(
             math.cos(glm.radians(self.yaw)) * math.cos(glm.radians(self.pitch)),
@@ -59,53 +89,87 @@ class Camera:
         self.up = glm.normalize(glm.cross(self.right, self.front))
 
     def register_event_listeners(self, events, mouse):
-        # movement bindings
-        events.on(pygame.KEYDOWN, lambda event: self.enable_moving('forward'), conditions={'key': pygame.K_w})
-        events.on(pygame.KEYDOWN, lambda event: self.enable_moving('backward'), conditions={'key': pygame.K_s})
-        events.on(pygame.KEYDOWN, lambda event: self.enable_moving('left'), conditions={'key': pygame.K_a})
-        events.on(pygame.KEYDOWN, lambda event: self.enable_moving('right'), conditions={'key': pygame.K_d})
+        """Register camera listeners for keyboard input, mouse movement and scrolling."""
 
-        events.on(pygame.KEYUP, lambda event: self.disable_moving('forward'), conditions={'key': pygame.K_w})
-        events.on(pygame.KEYUP, lambda event: self.disable_moving('backward'), conditions={'key': pygame.K_s})
-        events.on(pygame.KEYUP, lambda event: self.disable_moving('left'), conditions={'key': pygame.K_a})
-        events.on(pygame.KEYUP, lambda event: self.disable_moving('right'), conditions={'key': pygame.K_d})
+        # movement bindings
+        for direction in ['forward', 'backward', 'left', 'right']:
+            events.on(
+                pygame.KEYDOWN,
+                lambda event, data: self.enable_moving(data['direction']),
+                conditions={'key': MOVEMENT_BINDINGS[direction]},
+                data={'direction': direction}
+            )
+            events.on(
+                pygame.KEYUP,
+                lambda event, data: self.disable_moving(data['direction']),
+                conditions={'key': MOVEMENT_BINDINGS[direction]},
+                data={'direction': direction}
+            )
+
         # mouse zooming
-        events.on(pygame.MOUSEBUTTONDOWN, lambda event: self.scroll_up(), conditions={'button': Mouse.M_SCROLL_UP})
-        events.on(pygame.MOUSEBUTTONDOWN, lambda event: self.scroll_down(), conditions={'button': Mouse.M_SCROLL_DOWN})
+        events.on(
+            pygame.MOUSEBUTTONDOWN,
+            lambda event: self.on_scroll_up(),
+            conditions={'button': Mouse.M_SCROLL_UP}
+        )
+        events.on(
+            pygame.MOUSEBUTTONDOWN,
+            lambda event: self.on_scroll_down(),
+            conditions={'button': Mouse.M_SCROLL_DOWN}
+        )
         # handle mouse movement
-        events.on(pygame.MOUSEMOTION, lambda event, data: self.mouse_movement(data['mouse']), data={'mouse': mouse})
+        events.on(
+            pygame.MOUSEMOTION,
+            lambda event, data: self.on_mouse_movement(data['mouse']),
+            data={'mouse': mouse}
+        )
 
         events.on(events.DRAW, self.on_draw)
 
     def move_forward(self):
+        """Move camera forward."""
         self.pos += self.movement_speed * self.front
 
     def move_backward(self):
+        """Move camera backward."""
         self.pos -= self.movement_speed * self.front
 
     def move_left(self):
+        """Move camera to the left."""
         self.pos -= self.movement_speed * glm.normalize(glm.cross(self.front, self.up))
 
     def move_right(self):
+        """Move camera to the right."""
         self.pos += self.movement_speed * glm.normalize(glm.cross(self.front, self.up))
 
-    def set_movement_speed(self, movement_speed):
-        self.movement_speed = movement_speed
-
-    def set_front(self, front):
-        self.front = front
-
     def on_draw(self, event):
-        self.set_movement_speed(SPEED * event.dt)
+        """
+        Callback for the Events.DRAW event that handles camera movement.
 
-        if self.moving_forward: self.move_forward()
-        if self.moving_backward: self.move_backward()
-        if self.moving_left: self.move_left()
-        if self.moving_right: self.move_right()
+        :param event: Events.DRAW event
+        """
 
-    def mouse_movement(self, mouse, constrain_pitch=True):
-        self.yaw += (mouse.x_offset * self.mouse_sensivity)
-        self.pitch += (mouse.y_offset * self.mouse_sensivity)
+        self.movement_speed = SPEED * event.dt
+
+        if self.moving_forward:
+            self.move_forward()
+        if self.moving_backward:
+            self.move_backward()
+        if self.moving_left:
+            self.move_left()
+        if self.moving_right:
+            self.move_right()
+
+    def on_mouse_movement(self, mouse, constrain_pitch=True):
+        """
+        Callback for the pygame.MOUSEMOTION event that handles camera movement.
+
+        :param mouse: input.Mouse
+        :param constrain_pitch: flag that determine if pitch should be constrained
+        :return:
+        """
+        self.yaw += (mouse.offset_x * self.mouse_sensivity)
+        self.pitch += (mouse.offset_y * self.mouse_sensivity)
 
         if constrain_pitch:
             if self.pitch > 89.0:
@@ -115,14 +179,16 @@ class Camera:
 
         self.update_camera_vectors()
 
-    def scroll_down(self):
-        if self.zoom <= 1.0:
-            self.zoom = 1.0
-        else:
-            self.zoom -= 5.0
-
-    def scroll_up(self):
+    def on_scroll_up(self):
+        """Callback for the pygame.MOUSEBUTTONDOWN that handles camera zooming up."""
         if self.zoom >= 45.0:
             self.zoom = 45.0
         else:
             self.zoom += 5.0
+
+    def on_scroll_down(self):
+        """Callback for the pygame.MOUSEBUTTONDOWN that handles camera zooming down."""
+        if self.zoom <= 1.0:
+            self.zoom = 1.0
+        else:
+            self.zoom -= 5.0

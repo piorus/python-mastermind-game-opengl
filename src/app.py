@@ -17,8 +17,8 @@ import game.model.answer
 import game.objects3d.sphere
 import game.scene
 import game.state
-from bootstrap.input import Input, Mouse
-from bootstrap.events import Events
+from bootstrap.mouse import Mouse
+from bootstrap.events import Events, post
 from bootstrap.camera import Camera
 
 RESOLUTION = (1024, 768)
@@ -38,7 +38,7 @@ class App:
     def __init__(self):
         self.window = pygame.display.set_mode(RESOLUTION, pygame.DOUBLEBUF | pygame.OPENGL)
         self.clock = pygame.time.Clock()
-        self.input = Input(Mouse())
+        self.mouse = Mouse()
         self.camera = Camera(CAMERA_FRONT)
         self.events = Events()
         self.state = game.state.State()
@@ -70,11 +70,10 @@ class App:
 
     def register_events(self):
         """Register event listeners used in the application."""
-        mouse = self.input.get_mouse()
         # handle mouse movement
-        self.events.on(pygame.MOUSEMOTION, mouse.on_mouse_move)
+        self.events.on(pygame.MOUSEMOTION, self.mouse.on_mouse_move)
         # register camera events for movement and zooming
-        self.camera.register_event_listeners(self.events, mouse)
+        self.camera.register_event_listeners(self.events, self.mouse)
         # register SPACEBAR as active selection switcher
         self.events.on(
             pygame.KEYDOWN,
@@ -133,7 +132,7 @@ class App:
             self.events.process(pygame.event.get())
 
             current_frame = pygame.time.get_ticks() / 1000.0
-            self.events.post(Events.DRAW, {
+            post(Events.DRAW, {
                 'dt': current_frame - last_frame,
                 'resolution': RESOLUTION,
                 'camera': self.camera,

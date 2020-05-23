@@ -25,32 +25,28 @@ class Feedback:
     # pylint: disable=too-many-arguments
     def __init__(
             self,
-            row: int,
+            feedback_row: int,
             start_pos: glm.vec3,
             answers_offset: float,
             state: State,
             sphere: Sphere
     ):
-        self.row = row
+        self.row = feedback_row
         self.start_pos = start_pos
         self.answers_offset = answers_offset
         self.feedback_offset = answers_offset / 3
         self.state = state
         self.sphere = sphere
 
-    def draw(
-            self,
-            view: glm.mat4,
-            projection: glm.mat4
-    ):
+    def draw(self, view: glm.mat4, projection: glm.mat4):
         """
         Draw feedback spheres for the given row on the screen.
 
         :param view: 4x4 view matrix
         :param projection: 4x4 projection matrix
         """
-        for index, feedback_pos in enumerate(self.get_points()):
-            if not self.is_visible(index):
+        for col, feedback_pos in enumerate(self.get_points()):
+            if not self.is_visible(col):
                 continue
 
             feedback_x, feedback_z = feedback_pos
@@ -60,7 +56,7 @@ class Feedback:
                 model,
                 view,
                 projection,
-                self.get_color(self.row, index),
+                self.get_color(self.row, col),
                 scale=glm.vec3(0.25, 0.25, 0.25)
             )
 
@@ -80,11 +76,24 @@ class Feedback:
 
         return [(x_1, z_1), (x_2, z_1), (x_1, z_2), (x_2, z_2)]
 
-    def is_visible(self, index):
-        return len(self.state.get_feedback(self.row)) >= index + 1 \
-               and self.state.get_feedback_digit(self.row, index) != 0
+    def is_visible(self, col: int):
+        """
+        Check if feedback sphere at given index is visible.
 
-    def get_color(self, row, col):
+        :param col: index to check
+        :return: True/False
+        """
+        return len(self.state.get_feedback(self.row)) >= col + 1 \
+               and self.state.get_feedback_digit(self.row, col) != 0
+
+    def get_color(self, row: int, col: int):
+        """
+        Get feedback color.
+
+        :param row: feedback row
+        :param col: feedback col
+        :return: feedback folor
+        """
         color = None
         feedback_digit = self.state.get_feedback_digit(row, col)
         if feedback_digit == 1:

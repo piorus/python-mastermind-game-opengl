@@ -82,17 +82,27 @@ class State:
 
     def get_answer(self, row):
         """
-        Get list f
-
-        :param row:
-        :return:
+        :param row: answer row
+        :return list of the answers for the given row
         """
         return self.answers[row]
 
     def get_answer_digit(self, row, col):
+        """
+        :param row: answer row
+        :param col: answer col
+        :return digit of the answer at given row and col
+        """
         return self.get_answer(row)[col]
 
     def set_answer_digit(self, digit: int, row: int = None, col: int = None):
+        """
+        Set answer digit at the given row and col.
+
+        :param digit: answer digit
+        :param row: answer row
+        :param col: answer col
+        """
         row = row if row else self.current_row
         col = col if col else self.get_active_index()
         self.answers[row][col] = digit

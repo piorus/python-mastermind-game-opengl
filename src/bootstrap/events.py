@@ -1,47 +1,17 @@
+"""events module"""
 import pygame
 
+# pylint: disable=too-few-public-methods
+class EventListener:
+    """
+    EventListener class is a container for the callback, conditions
+    and additional data for the given event_type.
+    """
 
-def check_conditions(event, watched_event):
-    for k in watched_event.conditions:
-        if not hasattr(event, k):
-            raise RuntimeError('Invalid conditions for %s: event does not have "%s"' % (watched_event.name, k))
-
-        if getattr(event, k) != watched_event.conditions[k]:
-            return False
-
-    return True
-
-
-class Subject:
-    def __init__(self):
-        self._watched_events = {}
-
-    def register_event(self, event_to_watch):
-        if event_to_watch.type in self._watched_events.keys():
-            self._watched_events[event_to_watch.type].append(event_to_watch)
-        else:
-            self._watched_events[event_to_watch.type] = [event_to_watch]
-
-    def register_events(self, events_to_watch):
-        for event_to_watch in events_to_watch:
-            self.register_event(event_to_watch)
-
-    def invoke_event_callbacks(self, event):
-        if event.type in self._watched_events.keys():
-            for watched_event in self._watched_events[event.type]:
-                if hasattr(watched_event, 'conditions') and not check_conditions(event, watched_event):
-                    continue
-
-                if watched_event.data:
-                    watched_event.callback(event, watched_event.data)
-                else:
-                    watched_event.callback(event)
-
-
-class EventToWatch:
-    def __init__(self, type, callback, name=None, conditions=None, data=None):
+    # pylint: disable=too-many-arguments
+    def __init__(self, event_type, callback, name=None, conditions=None, data=None):
         self.name = name
-        self.type = type
+        self.event_type = event_type
         self.callback = callback
         if conditions:
             self.conditions = conditions
@@ -49,19 +19,108 @@ class EventToWatch:
         self.data = data
 
 
+def check_conditions(event, event_listener: EventListener):
+    """
+    Check if all conditions are met for the event listener.
+
+    :param event:
+    :param event_listener:
+    :return:
+    """
+    for k in event_listener.conditions:
+        if not hasattr(event, k):
+            raise RuntimeError(
+                'Invalid conditions for %s: event does not have "%s"' % (event_listener.name, k)
+            )
+
+        if getattr(event, k) != event_listener.conditions[k]:
+            return False
+
+    return True
+
+
+def post(event_type, args):
+    """Post the event of the given type with the args."""
+    pygame.event.post(pygame.event.Event(event_type, args))
+
+
+class Subject:
+    """
+    Subject class is used to register event listeners and invoke callback
+    if conditions are met.
+    """
+    def __init__(self):
+        self.event_listeners = {}
+
+    def register_event_listener(self, event_listener: EventListener):
+        """
+        Register event listener.
+
+        :param event_listener: event listener to register
+        """
+        if event_listener.event_type in self.event_listeners.keys():
+            self.event_listeners[event_listener.event_type].append(event_listener)
+        else:
+            self.event_listeners[event_listener.event_type] = [event_listener]
+
+    def invoke_event_callbacks(self, event):
+        """
+        Check if conditions are met (if any) and invoke callbacks
+        of listeners that listen to the received event.
+        Received event is passed as an callback argument.
+        Optionally, there can be additional data set when registering event listener
+        that is also passed when invoking a callback.
+
+        :param event: event to check
+        """
+        if event.type in self.event_listeners.keys():
+            for event_listener in self.event_listeners[event.type]:
+                if hasattr(event_listener, 'conditions') \
+                        and not check_conditions(event, event_listener):
+                    continue
+
+                if event_listener.data:
+                    event_listener.callback(event, event_listener.data)
+                else:
+                    event_listener.callback(event)
+
+
 class Events:
+    """
+    Events class is used to handle all of the pygame events
+    and custom event defined below:
+    - Events.DRAW - executed in the each iteration of main game loop
+    """
     DRAW = pygame.USEREVENT
-    UPDATE_CAMERA_FRONT = pygame.USEREVENT + 1
 
     def __init__(self):
         self.subject = Subject()
 
     def process(self, events):
+        """
+        Process pygame events.
+
+        :param events:
+        :return:
+        """
         for event in events:
             self.subject.invoke_event_callbacks(event)
 
-    def on(self, type, callback, name=None, conditions=None, data=None):
-        self.subject.register_event(EventToWatch(type, callback, name, conditions, data))
+    # pylint: disable=invalid-name,too-many-arguments
+    def on(self, event_type, callback, name=None, conditions=None, data=None):
+        """
+        Register event listener for the event_type.
 
-    def post(self, type, args):
-        pygame.event.post(pygame.event.Event(type, args))
+        If event is posted by the pygame, there is a conditions check after
+        which a callback is invoked with received event and data (if any) as an arguments.
+
+        :param event_type:
+        :param callback:
+        :param name:
+        :param conditions:
+        :param data:
+        :return:
+        """
+        self.subject.register_event_listener(
+            EventListener(event_type, callback, name, conditions, data)
+        )

@@ -7,6 +7,19 @@ import glm
 from game.state import State
 from game.objects3d.sphere import Sphere
 
+ACTIVE_COLOR = glm.vec3(0.0, 1.0, 0.0)
+INACTIVE_COLOR = glm.vec3(1.0, 1.0, 1.0)
+# got colors from: https://www.random.org/colors/hex
+# got normalized values from: http://doc.instantreality.org/tools/color_calculator/
+SELECTION_COLORS = [
+    glm.vec3(0.474, 0.847, 0.031),
+    glm.vec3(0.752, 0.247, 0.627),
+    glm.vec3(0.450, 0.752, 0.768),
+    glm.vec3(0.172, 0.333, 0.564),
+    glm.vec3(0.635, 0.274, 0.070),
+    glm.vec3(1.000, 1.000, 0.000)
+]
+
 
 class Answer:
     """
@@ -18,39 +31,23 @@ class Answer:
             (color selection after pressing 1-6 will apply to this sphere)
       3. Answer.SELECTION_COLORS[0-5] - color of the selected answer digit
     """
-    ACTIVE_COLOR = glm.vec3(0.0, 1.0, 0.0)
-    INACTIVE_COLOR = glm.vec3(1.0, 1.0, 1.0)
-    # got colors from: https://www.random.org/colors/hex
-    # got normalized values from: http://doc.instantreality.org/tools/color_calculator/
-    SELECTION_COLORS = [
-        glm.vec3(0.474, 0.847, 0.031),
-        glm.vec3(0.752, 0.247, 0.627),
-        glm.vec3(0.450, 0.752, 0.768),
-        glm.vec3(0.172, 0.333, 0.564),
-        glm.vec3(0.635, 0.274, 0.070),
-        glm.vec3(1.000, 1.000, 0.000)
-    ]
 
     # pylint: disable=too-many-arguments
     def __init__(
             self,
-            row: int,
+            answer_row: int,
             start_pos: glm.vec3,
             offset: float,
             state: State,
             sphere: Sphere
     ):
-        self.row = row
+        self.row = answer_row
         self.start_pos = start_pos
         self.offset = offset
         self.state = state
         self.sphere = sphere
 
-    def draw(
-            self,
-            view: glm.mat4,
-            projection: glm.mat4
-    ):
+    def draw(self, view: glm.mat4, projection: glm.mat4):
         """
         Draw answers on the screen using view and projection matrices.
 
@@ -96,6 +93,6 @@ class Answer:
         :return: glm.vec3 vector containing sphere color
         """
         if self.state.get_answer_digit(row, col):
-            return Answer.SELECTION_COLORS[self.state.get_answer_digit(row, col) - 1]
+            return SELECTION_COLORS[self.state.get_answer_digit(row, col) - 1]
 
-        return Answer.ACTIVE_COLOR if is_active else Answer.INACTIVE_COLOR
+        return ACTIVE_COLOR if is_active else INACTIVE_COLOR
