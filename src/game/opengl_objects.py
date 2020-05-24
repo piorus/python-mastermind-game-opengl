@@ -12,6 +12,8 @@ from vertex_data import SphereVertexData
 # pylint: disable=too-many-arguments
 class OpenGLObject:
     """
+    OpenGLObject class is a base class for OpenGL objects.
+
     OpenGLObject is setting up initial object properiies
     and buffer vertices/indices data straight to the GPU.
     """
@@ -52,6 +54,8 @@ class OpenGLObject:
 
     def buffer_data_to_gpu(self):
         """
+        Buffer data to the GPU for the faster response rate.
+
         This method is used to buffer vertices/indices data
         straight to the GPU for better performance during rendering.
         Data needs to be buffered only once, as long as vertices do not change.
@@ -92,7 +96,9 @@ class OpenGLObject:
 # pylint: disable=too-many-arguments,too-few-public-methods
 class Sphere(OpenGLObject):
     """
-    Sphere class is used to render all of the spheres in the game by using
+    Sphere class is an OpenGL object with separate vao and vbo.
+
+    It is used to render all of the spheres in the game by using
     the same set of vertices and indices with different models (positions) in the space.
     """
 

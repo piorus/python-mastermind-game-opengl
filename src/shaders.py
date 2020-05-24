@@ -12,8 +12,10 @@ import OpenGL.GL as GL
 
 class Shader:
     """
-    Shader class is used to create both vertex and fragment shader.
-    It connects both of them in shader program which is stored in property.
+    Shader class is handy helper to manage GLSL shaders more efficiently.
+
+    It compiles vertex and fragment shaders from the file, and links them together
+    in a shader program.
     Shader class is widely used across the application to handle both rendering
     and dynamically passing data straight to the shader through uniform variables.
     """
@@ -33,8 +35,10 @@ class Shader:
     @staticmethod
     def create_shader_program(vertex_shader, fragment_shader):
         """
-        Create shader program and attach both
-        vertex and fragment shaders and link them together.
+        Create shader program from vertex and fragment shaders.
+
+        This function attach both vertex and fragment shaders
+        to the program and link them together.
 
         :param vertex_shader: vertex shader ID
         :param fragment_shader: fragment shader ID
@@ -83,6 +87,7 @@ class Shader:
     def get_location(self, name: str):
         """
         Get memory location of the uniform variable in the shader program.
+
         This is used by multiple methods below
         to send additional data straight into the shader.
 
@@ -97,6 +102,7 @@ class Shader:
 
         :param name: uniform variable name
         :param value: bool value to set
+        :return None
         """
         GL.glUniform1i(self.get_location(name), glm.value_ptr(value))
 
@@ -106,6 +112,7 @@ class Shader:
 
         :param name: uniform variable name
         :param value: int value to set
+        :return None
         """
         GL.glUniform1i(self.get_location(name), glm.value_ptr(value))
 
@@ -115,6 +122,7 @@ class Shader:
 
         :param name: uniform variable name
         :param value: float value to set
+        :return None
         """
         GL.glUniform1f(self.get_location(name), GL.GLfloat(value))
 
@@ -124,6 +132,7 @@ class Shader:
 
         :param name: uniform variable name
         :param value: glm.vec2 value to set
+        :return None
         """
         GL.glUniform2fv(self.get_location(name), 1, glm.value_ptr(value))
 
@@ -133,6 +142,7 @@ class Shader:
 
         :param name: uniform variable name
         :param value: glm.vec3 value to set
+        :return None
         """
         GL.glUniform3fv(self.get_location(name), 1, glm.value_ptr(value))
 
@@ -142,6 +152,7 @@ class Shader:
 
         :param name: uniform variable name
         :param value: glm.vec4 value to set
+        :return None
         """
         GL.glUniform4fv(self.get_location(name), 1, glm.value_ptr(value))
 
@@ -151,6 +162,7 @@ class Shader:
 
         :param name: uniform variable name
         :param value: glm.mat2 value to set
+        :return None
         """
         GL.glUniformMatrix2fv(self.get_location(name), 1, GL.GL_FALSE, glm.value_ptr(value))
 
@@ -160,6 +172,7 @@ class Shader:
 
         :param name: uniform variable name
         :param value: glm.mat3 value to set
+        :return None
         """
         GL.glUniformMatrix3fv(self.get_location(name), 1, GL.GL_FALSE, glm.value_ptr(value))
 
@@ -169,5 +182,6 @@ class Shader:
 
         :param name: uniform variable name
         :param value: glm.mat4 value to set
+        :return None
         """
         GL.glUniformMatrix4fv(self.get_location(name), 1, GL.GL_FALSE, glm.value_ptr(value))

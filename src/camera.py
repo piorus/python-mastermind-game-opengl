@@ -5,6 +5,7 @@ import math
 import glm
 import pygame
 
+from events import Events
 from mouse import Mouse
 
 YAW = -90.0
@@ -24,6 +25,7 @@ MOVEMENT_BINDINGS = {
 class Camera:
     """
     Camera class is used to simulate camera in the game.
+
     It supports mouse movement and scrolling.
     Camera position can be changed using W, S, A, D keys.
     """
@@ -60,19 +62,25 @@ class Camera:
         Enable moving in given direction.
 
         :param direction: direction that camera should move to
+        :return: None
         """
         setattr(self, 'moving_%s' % direction, True)
 
     def disable_moving(self, direction):
         """
-        Disable moving in the given direction
+        Disable moving in the given direction.
 
         :param direction: direction that camera should stop moving to
+        :return: None
         """
         setattr(self, 'moving_%s' % direction, False)
 
     def update_camera_vectors(self):
-        """Recalculate camera vectors."""
+        """
+        Recalculate camera vectors.
+
+        :return: None
+        """
 
         # calculate the new front vector
         front = glm.vec3(
@@ -88,8 +96,14 @@ class Camera:
         self.right = glm.normalize(glm.cross(self.front, self.world_up))
         self.up = glm.normalize(glm.cross(self.right, self.front))
 
-    def register_event_listeners(self, events, mouse):
-        """Register camera listeners for keyboard input, mouse movement and scrolling."""
+    def register_event_listeners(self, events: Events, mouse: Mouse):
+        """
+        Register camera listeners for keyboard input, mouse movement and scrolling.
+
+        :param events: Events object
+        :param mouse: Mouse object
+        :return: None
+        """
 
         # movement bindings
         for direction in ['forward', 'backward', 'left', 'right']:
@@ -127,19 +141,35 @@ class Camera:
         events.on(events.DRAW, self.on_draw)
 
     def move_forward(self):
-        """Move camera forward."""
+        """
+        Move camera forward.
+
+        :return: None
+        """
         self.pos += self.movement_speed * self.front
 
     def move_backward(self):
-        """Move camera backward."""
+        """
+        Move camera backward.
+
+        :return: None
+        """
         self.pos -= self.movement_speed * self.front
 
     def move_left(self):
-        """Move camera to the left."""
+        """
+        Move camera to the left.
+
+        :return: None
+        """
         self.pos -= self.movement_speed * glm.normalize(glm.cross(self.front, self.up))
 
     def move_right(self):
-        """Move camera to the right."""
+        """
+        Move camera to the right.
+
+        :return: None
+        """
         self.pos += self.movement_speed * glm.normalize(glm.cross(self.front, self.up))
 
     def on_draw(self, event):
@@ -147,6 +177,7 @@ class Camera:
         Callback for the Events.DRAW event that handles camera movement.
 
         :param event: Events.DRAW event
+        :return: None
         """
 
         self.movement_speed = SPEED * event.dt
@@ -166,7 +197,7 @@ class Camera:
 
         :param mouse: input.Mouse
         :param constrain_pitch: flag that determine if pitch should be constrained
-        :return:
+        :return: None
         """
         self.yaw += (mouse.offset_x * self.mouse_sensivity)
         self.pitch += (mouse.offset_y * self.mouse_sensivity)
@@ -180,14 +211,22 @@ class Camera:
         self.update_camera_vectors()
 
     def on_scroll_up(self):
-        """Callback for the pygame.MOUSEBUTTONDOWN that handles camera zooming up."""
+        """
+        Callback for the pygame.MOUSEBUTTONDOWN that handles camera zooming up.
+
+        :return: None
+        """
         if self.zoom >= 45.0:
             self.zoom = 45.0
         else:
             self.zoom += 5.0
 
     def on_scroll_down(self):
-        """Callback for the pygame.MOUSEBUTTONDOWN that handles camera zooming down."""
+        """
+        Callback for the pygame.MOUSEBUTTONDOWN that handles camera zooming down.
+
+        :return: None
+        """
         if self.zoom <= 1.0:
             self.zoom = 1.0
         else:

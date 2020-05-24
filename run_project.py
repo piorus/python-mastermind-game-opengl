@@ -12,6 +12,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 def main():
     """
     Wrapper function executed directly after starting the program.
+
     It is used to create App class, and to run the application.
     It also set OpenGL constants used in the game.
     """

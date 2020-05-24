@@ -36,9 +36,9 @@ class SphereVertexData:
     # pylint: disable=too-many-locals
     def load(self):
         """
-        Generate sphere vertices and indices
-        using predefined stack count, sector count and radius.
-        Then, cast it to type supported by OpenGL.
+        Generate sphere vertices and indices for predefined stacks and sectors.
+
+        Vertices and indices are then casted to the type supported by OpenGL.
         """
         stack_step = pi / SPHERE_STACK_COUNT
         sector_step = 2 * pi / SPHERE_SECTOR_COUNT

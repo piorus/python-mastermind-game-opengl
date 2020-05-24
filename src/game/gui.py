@@ -13,8 +13,9 @@ from utils import list_to_str
 
 class Gui:
     """
-    GUI class contains logic behind drawing of graphical user interface on the screen.
-    It is used to initialize all of the children and wrap some of their functionalities
+    Gui class is used to render graphical user interface.
+
+    It initializes all of the children and wrap some of their functionalities
     in self for a cleaner event handling.
     """
 
@@ -101,7 +102,7 @@ class Gui:
         and is required to run because combination and game mode
         is changed each time a reset is invoked.
 
-        :param state:
+        :param state: State object
         :return: None
         """
         combination_str = list_to_str(state.combination)

@@ -8,10 +8,12 @@ from events import Events, post
 
 class State:
     """
-    State class represents game state as:
-     - 2-dimensional list of answers (12x4)
-     - 2-dimensional list of feedback (12x4)
-     - current row - at the beginning the last row is selected,
+    State class contains state of the game.
+
+    State properties:
+     - answers - 2-dimensional list of answers (12x4)
+     - feedback - 2-dimensional list of feedback (12x4)
+     - current_row - current row, starts at the end and decrements,
         if game reaches row 0 a game over event is triggered (see game.logic module)
      - active_indices - a list that toggles (using SPACEBAR) which element
         of the current row is selected
@@ -38,19 +40,30 @@ class State:
         post(Events.AFTER_GAME_RESET, {'state': self})
 
     def reset(self):
-        """Game reset."""
+        """
+        Game reset.
+
+        :return: None
+        """
         self.__init__()
         post(Events.GAME_RESET, {})
 
     def get_active_index(self):
-        """Return currently activated index."""
+        """
+        Return currently activated index.
+
+        :return: currently active index
+        """
         return self.active_indices.index(1)
 
     def change_active_index(self):
         """
         Change active index to the next element.
+
         In case if no next element is available,
         proceed to the first element.
+
+        :return: None
         """
         index = self.get_active_index()
         next_index = 0
@@ -84,8 +97,7 @@ class State:
 
         In case if no row is passed, current_row is used.
 
-        :param digit: digit to set, this later determine with which color
-            a sphere is drawn
+        :param digit: digit to set, this later used to determine color
         :param row: feedback row
         :return: None
         """
@@ -93,6 +105,8 @@ class State:
 
     def get_answer(self, row):
         """
+        Get answer for the given row.
+
         :param row: answer row
         :return list of the answers for the given row
         """
@@ -100,6 +114,8 @@ class State:
 
     def get_answer_digit(self, row, col):
         """
+        Get answer digit for the given row and col.
+
         :param row: answer row
         :param col: answer col
         :return digit of the answer at given row and col
@@ -109,7 +125,7 @@ class State:
 
     def set_answer_digit(self, digit: int, row: int = None, col: int = None):
         """
-        Set answer digit at the given row and col.
+        Set answer digit for the given row and col.
 
         :param digit: answer digit
         :param row: answer row

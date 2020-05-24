@@ -7,12 +7,16 @@ from utils import list_to_str
 
 
 class GameRules:
-    """GameRules class is handling the game logic in a correct way."""
+    """
+    GameRules class is handling the game logic in a correct way.
+    """
     def __init__(self, state):
         self.state = state
 
     def check_row(self):
         """
+        Check answer for the current row.
+
         This function is checking answers for the current row,
         triggers win and game over events.
 
@@ -85,7 +89,9 @@ class GameRules:
 
 
 class CheaterGameRules(GameRules):
-    """CheaterGameRules class is handling the game logic in a wrong way."""
+    """
+    CheaterGameRules class is handling the game logic in a wrong way.
+    """
 
     def set_answer_digit(self, digit):
         """
@@ -101,7 +107,9 @@ class CheaterGameRules(GameRules):
 
 # pylint: disable=too-few-public-methods
 class Logic:
-    """Logic class is used to handle game logic."""
+    """
+    Logic class is used to handle game logic.
+    """
 
     def __init__(self, state: State):
         self.state = state

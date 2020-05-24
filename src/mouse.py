@@ -5,7 +5,9 @@ import pygame
 
 # pylint: disable=too-few-public-methods
 class Mouse:
-    """Mouse class is used to handle mouse movement in the game."""
+    """
+    Mouse class is used to handle mouse input in the game.
+    """
 
     M_SCROLL_UP = 4
     M_SCROLL_DOWN = 5

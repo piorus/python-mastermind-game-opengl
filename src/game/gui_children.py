@@ -17,7 +17,9 @@ CONTROLS_TEXTS = [
 
 
 class GuiChild:
-    """Base class for the GUI child."""
+    """
+    Base class for the GUI child.
+    """
 
     def __init__(self):
         self.visible = False
@@ -58,7 +60,9 @@ class GuiChild:
 
 
 class Controls(GuiChild):
-    """Controls class is a 'man' of this game. Linux pun intended."""
+    """
+    Controls class is a 'man' of this game. Linux pun intended.
+    """
 
     def __init__(self, shader):
         super().__init__()
@@ -79,7 +83,9 @@ class Controls(GuiChild):
 
 class GameResult(GuiChild):
     """
-    GameResult class is used to display results of the following events:
+    GameResult class is used to display game result.
+
+    Supported game results are:
     - game over
     - game won
     - cheater check
@@ -130,7 +136,9 @@ class GameResult(GuiChild):
 
 
 class ValidationError(GuiChild):
-    """ValidationError class is used to display validation error."""
+    """
+    ValidationError class is used to display validation error.
+    """
 
     def __init__(
             self,
@@ -153,6 +161,6 @@ class ValidationError(GuiChild):
         Set validation error text.
 
         :param validation_text: validation text
-        :return:
+        :return: None
         """
         self.text_object.set_text(validation_text)

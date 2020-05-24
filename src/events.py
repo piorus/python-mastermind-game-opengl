@@ -5,8 +5,9 @@ import pygame
 # pylint: disable=too-few-public-methods
 class EventListener:
     """
-    EventListener class is a container for the callback, conditions
-    and additional data for the given event_type.
+    EventListener class is a container used in event handling.
+
+    It stores callback, conditions and additional data for the given event_type.
     """
 
     # pylint: disable=too-many-arguments
@@ -41,14 +42,21 @@ def check_conditions(event, event_listener: EventListener):
 
 
 def post(event_type, args):
-    """Post the event of the given type with the args."""
+    """
+    Post the event of the given type with the args.
+
+    :param event_type: type of the event
+    :param args: arguments
+    :return: None
+    """
     pygame.event.post(pygame.event.Event(event_type, args))
 
 
 class Subject:
     """
-    Subject class is used to register event listeners and invoke callback
-    if conditions are met.
+    Subject class is used to register event listeners and invoke callbacks.
+
+    Callbacks are invoked only if conditions are met.
     """
 
     def __init__(self):
@@ -59,6 +67,7 @@ class Subject:
         Register event listener.
 
         :param event_listener: event listener to register
+        :return: None
         """
         if event_listener.event_type in self.event_listeners.keys():
             self.event_listeners[event_listener.event_type].append(event_listener)
@@ -67,6 +76,8 @@ class Subject:
 
     def invoke_event_callbacks(self, event):
         """
+        Invoke all callbacks for the given event.
+
         Check if conditions are met (if any) and invoke callbacks
         of listeners that listen to the received event.
         Received event is passed as an callback argument.
@@ -74,6 +85,7 @@ class Subject:
         that is also passed when invoking a callback.
 
         :param event: event to check
+        :return: None
         """
         if event.type in self.event_listeners.keys():
             for event_listener in self.event_listeners[event.type]:
@@ -89,8 +101,9 @@ class Subject:
 
 class Events:
     """
-    Events class is used to handle all of the pygame events
-    and custom event defined below:
+    Events class that is used to handle all of the pygame events.
+
+    List of custom events defined below:
     - Events.DRAW - executed in the each iteration of main game loop
     - Events.GAME_OVER - executed after the game is over
     - Events.GAME_WON - executed after the game is won

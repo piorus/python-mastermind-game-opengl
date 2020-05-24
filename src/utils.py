@@ -103,7 +103,7 @@ def load_texture(
 
 def list_to_str(list_to_convert: list):
     """
-    Convert list to string
+    Convert list to string.
 
     :param list_to_convert: list to convert
     :return: string as concatenated list elements

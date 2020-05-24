@@ -27,6 +27,7 @@ CAMERA_FRONT = glm.vec3(10.0, 40.0, 15.0)
 class App:
     """
     Core of the game application.
+
     This class creates most of the game objects and
     handles event listeners registration.
     It also contains the main game loop.
@@ -45,7 +46,11 @@ class App:
         self.scene = game.scene.Scene(state=self.state)
 
     def register_events(self):
-        """Register event listeners used in the application."""
+        """
+        Register event listeners used in the application.
+
+        :return: None
+        """
         # handle mouse movement
         self.events.on(pygame.MOUSEMOTION, self.mouse.on_mouse_move)
         # register camera events for movement and zooming
@@ -139,7 +144,11 @@ class App:
         )
 
     def run(self):
-        """Main game loop."""
+        """
+        Main game loop.
+
+        :return: None
+        """
 
         last_frame = 0
         aspect_ratio = RESOLUTION[0] / RESOLUTION[1]
@@ -174,6 +183,10 @@ class App:
 
     @staticmethod
     def quit():
-        """Quit the application."""
+        """
+        Quit the application.
+
+        :return: None
+        """
         pygame.quit()
         sys.exit()

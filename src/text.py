@@ -44,8 +44,12 @@ DEFAULT_FRAGMENT_SHADER = '''
 
 def get_default_shader():
     """
-    Returns default shader program used to render text by compiling
-    DEFAULT_VERTEX_SHADER and DEFAULT_FRAGMENT_SHADER then joining them together.
+    Returns default shader program used to render text.
+
+    DEFAULT_VERTEX_SHADER and DEFAULT_FRAGMENT_SHADER are compiled
+    and then joined together in a shader program which is returned.
+
+    :return shader program ID
     """
     vertex = Shader.create_shader(GL.GL_VERTEX_SHADER, DEFAULT_VERTEX_SHADER)
     fragment = Shader.create_shader(GL.GL_FRAGMENT_SHADER, DEFAULT_FRAGMENT_SHADER)
@@ -65,14 +69,18 @@ def pygameize_color(color):
     """
     return None if color is None or color[3] == 0.0 else [i * 255 for i in color]
 
+
 # pylint: disable=too-many-instance-attributes,too-many-arguments
 class Text:
     """
-    Text class is handling text rendering by copying
-    pygame surface data into the OpenGL texture.
+    Text class is handling text rendering.
+
+    Internally, it is using pygame.font to render text,
+    and copy surface data into the OpenGL texture.
     Rendering can be handled by any shader program
     passed as a constructor argument.
     """
+
     def __init__(
             self,
             text,
@@ -103,12 +111,17 @@ class Text:
 
     def load(self):
         """
-        Prepare text to render in OpenGL context by:
-          1. creating pygame font
-          2. rendering text passed to the constructor using font
-          3. converting pygame surface to OpenGL texture by copying surface data
+        Prepare text to render in OpenGL context.
+
+        List of steps in execution order:
+          1. create pygame font
+          2. render text passed to the constructor using pygame font
+          3. convert pygame surface to OpenGL texture by copying surface data
              to the texture
-          4. calculating text position
+          4. calculate text position
+          5. send updated vertices / indices data to the GPU
+
+        :return None
         """
         font = pygame.font.SysFont(self.font_name, self.font_size)
         surface = font.render(
@@ -175,6 +188,8 @@ class Text:
     def draw(self):
         """
         Draw text on the screen.
+
+        :return: None
         """
         if not self.is_prepared:
             return
@@ -191,7 +206,7 @@ class Text:
         Set text and copy surface data to the OpenGL texture.
 
         :param text: new text value
-        :return:
+        :return: None
         """
         self.text = text
         self.is_prepared = False
