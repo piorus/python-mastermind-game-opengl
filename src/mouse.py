@@ -19,7 +19,12 @@ class Mouse:
         self.offset_y = 0.0
 
     def on_mouse_move(self, event):
-        """Callback for the pygame.MOUSEMOTION event that handles mouse movement."""
+        """
+        Callback for the pygame.MOUSEMOTION event that handles mouse movement.
+
+        :param event: pygame Event
+        :return: None
+        """
         if self.first_time:
             self.last_x, self.last_y = pygame.mouse.get_pos()
             self.first_time = False

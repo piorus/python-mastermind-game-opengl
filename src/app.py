@@ -5,14 +5,13 @@ and register game events.
 This is the place where main game loop is located (run() method).
 """
 import sys
-import os
-
-sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
 import glm
-import pygame
 import OpenGL.GL as GL
+import pygame
 
+from camera import Camera
+from events import Events, post
 import game.gui
 import game.logic
 import game.model.feedback
@@ -21,8 +20,6 @@ import game.opengl_objects.sphere
 import game.scene
 import game.state
 from mouse import Mouse
-from events import Events, post
-from camera import Camera
 
 RESOLUTION = (1024, 768)
 CAMERA_FRONT = glm.vec3(10.0, 40.0, 15.0)
@@ -110,12 +107,15 @@ class App:
                 data={'digit': index + 1}
             )
 
+        # check if cheater after pressing O
         self.events.on(
             pygame.KEYDOWN,
             lambda event: post(Events.CHEATER_CHECK, {'state': self.state}),
             conditions={'key': pygame.K_o}
         )
+        # show text with result of the check
         self.events.on(Events.CHEATER_CHECK, lambda event: self.gui.on_cheater_check())
+        # disable input, wait for reset
         self.events.on(Events.CHEATER_CHECK, lambda event: self.state.disable_input())
 
         # reset game after pressing R
@@ -127,16 +127,33 @@ class App:
         # change game results texts to the new combination after game reset
         self.events.on(
             Events.AFTER_GAME_RESET,
-            lambda event: self.gui.after_game_reset(event.state)
+            lambda event: self.gui.reset_gui_texts(event.state)
         )
         # hide previous game result after resetting the game
         self.events.on(Events.GAME_RESET, lambda event: self.gui.hide_result())
         # show result message and disable input when the game is won
         self.events.on(Events.GAME_WON, lambda event: self.gui.on_game_won())
+        # disable input, wait for reset
         self.events.on(Events.GAME_WON, lambda event: self.state.disable_input())
         # show result message and disable input when the game is lost
         self.events.on(Events.GAME_OVER, lambda event: self.gui.on_game_over())
+        # disable input, wait for reset
         self.events.on(Events.GAME_OVER, lambda event: self.state.disable_input())
+        # show validation error
+        self.events.on(
+            Events.SHOW_VALIDATION_ERROR,
+            lambda event: self.gui.show_validation_error(event.validation_text)
+        )
+        # hide validation error
+        self.events.on(
+            Events.HIDE_VALIDATION_ERROR,
+            lambda event: self.gui.hide_validation_error()
+        )
+        # set active rules for the current game (depends on the11 cheater state)
+        self.events.on(
+            Events.AFTER_GAME_RESET,
+            lambda event: self.logic.change_active_rules(self.state)
+        )
         # quit the application after clicking X in the window
         self.events.on(pygame.QUIT, lambda event: self.quit())
         # quit the application after pressing ESC key
@@ -185,25 +202,3 @@ class App:
         """Quit the application."""
         pygame.quit()
         sys.exit()
-
-
-def main():
-    """
-    Wrapper function executed directly after starting the program.
-    It is used to create App class, and to run the application.
-    It also set OpenGL constants used in the game.
-    """
-    pygame.init()
-
-    app = App()
-
-    GL.glEnable(GL.GL_DEPTH_TEST)
-    GL.glEnable(GL.GL_BLEND)  # blend is used in GUI texts
-    GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
-
-    app.register_events()
-    app.run()
-
-
-if __name__ == '__main__':
-    main()

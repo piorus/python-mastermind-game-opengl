@@ -1,12 +1,13 @@
 """logic module"""
 from random import randint
 
-from game.state import State
 from events import Events, post
+from game.state import State
 from utils import list_to_str
 
 
 class GameRules:
+    """GameRules class is handling the game logic in a correct way."""
     def __init__(self, state):
         self.state = state
 
@@ -28,15 +29,17 @@ class GameRules:
         if 0 in answer:
             print('Błąd. Nie wybrano wszystkich wartości z wiersza.')
             post(
-                Events.VALIDATION_ERROR,
-                {'message': 'Błąd. Nie wybrano wszystkich wartości z wiersza.'}
+                Events.SHOW_VALIDATION_ERROR,
+                {'validation_text': 'Błąd. Nie wybrano wszystkich wartości z wiersza.'}
             )
             return
 
         if answer == combination:
-            str_combination = list_to_str(self.state.combination)
-            print('WYGRAŁEŚ. Gratulacje. Poprawna kombinacja: %s' % str_combination)
-            post(Events.GAME_WON, {'combination': str_combination})
+            print(
+                'WYGRAŁEŚ. Gratulacje. Poprawna kombinacja: %s'
+                % list_to_str(self.state.combination)
+            )
+            post(Events.GAME_WON, {})
             return
 
         indices_to_check = []
@@ -55,30 +58,45 @@ class GameRules:
                 self.state.append_feedback_digit(2)
 
         if current_row == 0:
-            str_combination = list_to_str(self.state.combination)
-            print('PRZEGRAŁEŚ. Poprawna kombinacja: %s' % str_combination)
-            post(Events.GAME_OVER, {'combination': str_combination})
+            print('PRZEGRAŁEŚ. Poprawna kombinacja: %s' % list_to_str(self.state.combination))
+            post(Events.GAME_OVER, {})
             return
 
         self.state.current_row -= 1
 
     def set_answer_digit(self, digit):
+        """
+        Set answer digit.
+
+        :param digit:
+        :return: None
+        """
         if self.state.input_enabled:
             self.state.set_answer_digit(digit)
 
     def change_active_index(self):
+        """
+        Change active index.
+
+        :return: None
+        """
         if self.state.input_enabled:
             self.state.change_active_index()
 
 
 class CheaterGameRules(GameRules):
-    def __init__(self, state):
-        super().__init__(state)
+    """CheaterGameRules class is handling the game logic in a wrong way."""
 
     def set_answer_digit(self, digit):
+        """
+        Incorrectly sets answer digit using random integer.
+
+        :param digit: digit to set, randomint is used instead of this parameter
+        :return: None
+        """
         if self.state.input_enabled:
             # pure evil
-            self.state.set_answer_digit(randint(0, 6))
+            self.state.set_answer_digit(randint(1, 6))
 
 
 # pylint: disable=too-few-public-methods
@@ -89,21 +107,38 @@ class Logic:
         self.state = state
         self.rules = GameRules(state)
         self.cheater_rules = CheaterGameRules(state)
+        self.active_rules = None
+
+    def change_active_rules(self, state: State):
+        """
+        Change active rules after resetting the game.
+
+        :param state: game state
+        :return: None
+        """
+        self.active_rules = self.cheater_rules if state.cheater else self.rules
 
     def check_row(self):
-        if self.state.cheater:
-            self.cheater_rules.check_row()
-        else:
-            self.rules.check_row()
+        """
+        Check row for the correct answer.
+
+        :return: None
+        """
+        self.active_rules.check_row()
 
     def set_answer_digit(self, digit):
-        if self.state.cheater:
-            self.cheater_rules.set_answer_digit(digit)
-        else:
-            self.rules.set_answer_digit(digit)
+        """
+        Set answer digit for the currently active cell.
+
+        :param digit: digit to set
+        :return: None
+        """
+        self.active_rules.set_answer_digit(digit)
 
     def change_active_index(self):
-        if self.state.cheater:
-            self.cheater_rules.change_active_index()
-        else:
-            self.rules.change_active_index()
+        """
+        Change active index of the current row.
+
+        :return: None
+        """
+        self.active_rules.change_active_index()

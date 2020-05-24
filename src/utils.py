@@ -101,5 +101,11 @@ def load_texture(
     )
 
 
-def list_to_str(combination: list):
-    return "".join([str(digit) for digit in combination])
+def list_to_str(list_to_convert: list):
+    """
+    Convert list to string
+
+    :param list_to_convert: list to convert
+    :return: string as concatenated list elements
+    """
+    return "".join([str(digit) for digit in list_to_convert])

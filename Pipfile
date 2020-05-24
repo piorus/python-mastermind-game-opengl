@@ -7,9 +7,8 @@ verify_ssl = true
 
 [packages]
 pygame = "*"
-pyopengl = "*"
-pyglm = "*"
-pywavefront = "*"
+PyOpenGL = "*"
+PyGLM = "*"
 yapf = "*"
 
 [requires]

@@ -33,6 +33,7 @@ class SphereVertexData:
         self.indices = []
         self.indices_count = 0
 
+    # pylint: disable=too-many-locals
     def load(self):
         """
         Generate sphere vertices and indices
@@ -59,7 +60,10 @@ class SphereVertexData:
                 _ny = _y * SPHERE_LENGTH_INV
                 _nz = _z * SPHERE_LENGTH_INV
 
-                self.vertices += [*glm.normalize(glm.vec3(_x, _y, _z)), *glm.normalize(glm.vec3(_nx, _ny, _nz))]
+                self.vertices += [
+                    *glm.normalize(glm.vec3(_x, _y, _z)), # position
+                    *glm.normalize(glm.vec3(_nx, _ny, _nz)) # normals
+                ]
 
                 if i != 0:
                     self.indices += [k_1, k_2, k_1 + 1]

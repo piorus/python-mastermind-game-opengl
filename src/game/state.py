@@ -1,8 +1,10 @@
 """state module"""
 
-from typing import List
-from events import Events, post
 from random import randint
+from typing import List
+
+from events import Events, post
+
 
 class State:
     """
@@ -11,7 +13,10 @@ class State:
      - 2-dimensional list of feedback (12x4)
      - current row - at the beginning the last row is selected,
         if game reaches row 0 a game over event is triggered (see game.logic module)
-     - active - a list that toggles (using SPACEBAR) which element  of the current row is selected
+     - active_indices - a list that toggles (using SPACEBAR) which element
+        of the current row is selected
+     - input_enabled - determines if input is currently enabled
+     - cheater - is used to determine which game rules should be used
     """
     combination: List[int]
     answers: List[List[int]]
@@ -20,8 +25,7 @@ class State:
     current_row: int
 
     def __init__(self):
-        # self.combination = [random.randint(1, 6) for i in range(4)]
-        self.combination = [1, 2, 3, 4]
+        self.combination = [randint(1, 6) for i in range(4)]
         self.answers = [[0 for j in range(4)] for i in range(12)]
         self.feedback = [[] for i in range(12)]
         self.active_indices = [1 if i == 0 else 0 for i in range(4)]
@@ -83,6 +87,7 @@ class State:
         :param digit: digit to set, this later determine with which color
             a sphere is drawn
         :param row: feedback row
+        :return: None
         """
         self.feedback[row if row else self.current_row].append(digit)
 
@@ -98,6 +103,7 @@ class State:
         :param row: answer row
         :param col: answer col
         :return digit of the answer at given row and col
+        :return: None
         """
         return self.get_answer(row)[col]
 
@@ -108,10 +114,16 @@ class State:
         :param digit: answer digit
         :param row: answer row
         :param col: answer col
+        :return: None
         """
         row = row if row else self.current_row
         col = col if col else self.get_active_index()
         self.answers[row][col] = digit
 
     def disable_input(self):
+        """
+        Disable input and wait for the reset.
+
+        :return: None
+        """
         self.input_enabled = False

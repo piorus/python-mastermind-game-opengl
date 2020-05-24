@@ -1,6 +1,7 @@
 """events module"""
 import pygame
 
+
 # pylint: disable=too-few-public-methods
 class EventListener:
     """
@@ -49,6 +50,7 @@ class Subject:
     Subject class is used to register event listeners and invoke callback
     if conditions are met.
     """
+
     def __init__(self):
         self.event_listeners = {}
 
@@ -90,6 +92,13 @@ class Events:
     Events class is used to handle all of the pygame events
     and custom event defined below:
     - Events.DRAW - executed in the each iteration of main game loop
+    - Events.GAME_OVER - executed after the game is over
+    - Events.GAME_WON - executed after the game is won
+    - Events.GAME_RESET - executed after pressing R
+    - Events.AFTER_GAME_RESET - executed after resetting the game
+    - Events.CHEATER_CHECK - executed after pressing O
+    - Events.SHOW_VALIDATION_ERROR - executed when validation error occurs
+    - Events.HIDE_VALIDATION_ERROR - executed after 2s to hide validation error
     """
     DRAW = pygame.USEREVENT
     GAME_OVER = pygame.USEREVENT + 1
@@ -97,8 +106,8 @@ class Events:
     GAME_RESET = pygame.USEREVENT + 3
     AFTER_GAME_RESET = pygame.USEREVENT + 4
     CHEATER_CHECK = pygame.USEREVENT + 5
-    VALIDATION_ERROR = pygame.USEREVENT + 6
-
+    SHOW_VALIDATION_ERROR = pygame.USEREVENT + 6
+    HIDE_VALIDATION_ERROR = pygame.USEREVENT + 7
 
     def __init__(self):
         self.subject = Subject()
@@ -108,7 +117,7 @@ class Events:
         Process pygame events.
 
         :param events:
-        :return:
+        :return: None
         """
         for event in events:
             self.subject.invoke_event_callbacks(event)
@@ -126,7 +135,7 @@ class Events:
         :param name:
         :param conditions:
         :param data:
-        :return:
+        :return: None
         """
         self.subject.register_event_listener(
             EventListener(event_type, callback, name, conditions, data)

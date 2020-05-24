@@ -8,8 +8,8 @@ and feedback rows displayed are equal to the number of checked rows.
 
 import glm
 
-from game.state import State
 from game.opengl_objects.sphere import Sphere
+from game.state import State
 
 
 class Feedback:

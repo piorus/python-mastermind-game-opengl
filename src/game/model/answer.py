@@ -4,8 +4,9 @@ This module contains Answer class which is used to render single row of the answ
 
 import glm
 
-from game.state import State
 from game.opengl_objects.sphere import Sphere
+from game.state import State
+
 
 ACTIVE_COLOR = glm.vec3(0.0, 1.0, 0.0)
 INACTIVE_COLOR = glm.vec3(1.0, 1.0, 1.0)

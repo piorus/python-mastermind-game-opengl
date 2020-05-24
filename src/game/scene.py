@@ -14,6 +14,7 @@ class Scene:
         Draw scene children on the screen.
 
         :param event: Events.DRAW event
+        :return None
         """
         for child in self.children:
             child.draw(event.view, event.projection, event.camera)
@@ -23,5 +24,6 @@ class Scene:
         Add scene child.
 
         :param child: any object that have draw(self, view, projection) method
+        :return None
         """
         self.children.append(child)

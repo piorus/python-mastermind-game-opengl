@@ -6,8 +6,8 @@ This module contains Shader class, which is used to handle GLSL shaders.
 import os
 import sys
 
-import OpenGL.GL as GL
 import glm
+import OpenGL.GL as GL
 
 
 class Shader:

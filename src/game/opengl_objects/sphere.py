@@ -1,13 +1,13 @@
 """Sphere class"""
 from ctypes import sizeof
 
-import OpenGL.GL as GL
 import glm
+import OpenGL.GL as GL
 
+from camera import Camera
+from game.opengl_objects.opengl_object import OpenGLObject
 import shaders
 from vertex_data import SphereVertexData
-from game.opengl_objects.opengl_object import OpenGLObject
-from camera import Camera
 
 
 # pylint: disable=too-many-arguments,too-few-public-methods
@@ -68,11 +68,10 @@ class Sphere(OpenGLObject):
         """
         self.shader.use()
 
-        light_pos = glm.vec3(-5.0, 5.0, 15.0)
         diffuse_color = color * glm.vec3(0.5)
         ambient_color = diffuse_color * glm.vec3(0.2)
 
-        self.shader.set_vec3('lightPos', light_pos)
+        self.shader.set_vec3('lightPos', glm.vec3(-5.0, 5.0, 15.0))
         self.shader.set_vec3('viewPos', camera.pos)
 
         # light properties

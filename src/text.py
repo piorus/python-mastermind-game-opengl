@@ -6,8 +6,9 @@ text module is handling OpenGL text rendering by copying pygame surface into the
 
 from ctypes import sizeof, c_void_p
 
-import pygame
+import glm
 import OpenGL.GL as GL
+import pygame
 
 from shaders import Shader
 from utils import surface_to_texture, type_cast
@@ -76,10 +77,10 @@ class Text:
             self,
             text,
             shader,
-            position=(0.0, 0.0),
+            position=glm.vec2(0.0, 0.0),
             font_name='dejavusans',
             font_size=60,
-            font_color=(1.0, 1.0, 0.0, 1.0),
+            font_color=glm.vec4(1.0, 1.0, 0.0, 1.0),
             bg_color=None
     ):
         _x, _y = position
@@ -98,9 +99,9 @@ class Text:
         self.ebo = GL.glGenBuffers(1)
 
         self.is_prepared = False
-        self.prepare()
+        self.load()
 
-    def prepare(self):
+    def load(self):
         """
         Prepare text to render in OpenGL context by:
           1. creating pygame font
@@ -118,6 +119,11 @@ class Text:
         )
         # copy surface data to openGL texture
         self.texture = surface_to_texture(surface, flipped=True)
+
+        GL.glBindVertexArray(self.vao)
+        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
+        GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, self.ebo)
+
         # calc vertex positions
         res_x, res_y = pygame.display.get_surface().get_size()
         width, height = surface.get_size()
@@ -131,25 +137,19 @@ class Text:
             self._x - offset_x, self._y + offset_y, 0.0, 1.0,  # top left
         ]
         vertices = type_cast(vertices, GL.GLfloat)
-
-        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
-        GL.glBufferData(GL.GL_ARRAY_BUFFER, GL.sizeof(vertices), vertices, GL.GL_DYNAMIC_DRAW)
+        GL.glBufferData(GL.GL_ARRAY_BUFFER, GL.sizeof(vertices), vertices, GL.GL_STATIC_DRAW)
 
         indices = [
             0, 1, 3,
             1, 2, 3
         ]
         indices = type_cast(indices, GL.GLuint)
-
-        GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, self.ebo)
         GL.glBufferData(
             target=GL.GL_ELEMENT_ARRAY_BUFFER,
             size=sizeof(indices),
             data=indices,
             usage=GL.GL_DYNAMIC_DRAW
         )
-
-        GL.glBindVertexArray(self.vao)
         GL.glEnableVertexAttribArray(0)
         GL.glVertexAttribPointer(
             index=0,
@@ -176,15 +176,14 @@ class Text:
         """
         Draw text on the screen.
         """
+        if not self.is_prepared:
+            return
+
         GL.glUseProgram(self.shader)
         GL.glActiveTexture(GL.GL_TEXTURE0)
         GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
         GL.glBindVertexArray(self.vao)
         GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, self.ebo)
-
-        if not self.is_prepared:
-            return
-
         GL.glDrawElements(GL.GL_TRIANGLES, 6, GL.GL_UNSIGNED_INT, None)
 
     def set_text(self, text: str):
@@ -196,4 +195,4 @@ class Text:
         """
         self.text = text
         self.is_prepared = False
-        self.prepare()
+        self.load()
