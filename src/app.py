@@ -14,18 +14,14 @@ from camera import Camera
 from events import Events, post
 import game.gui
 import game.logic
-import game.model.feedback
-import game.model.answer
-import game.opengl_objects.sphere
 import game.scene
+import game.scene_children
 import game.state
 from mouse import Mouse
 
 RESOLUTION = (1024, 768)
+WINDOW_CAPTION = 'Piotr Rusin - Projekt zaliczeniowy z Języków Symbolicznych (rok 2020)'
 CAMERA_FRONT = glm.vec3(10.0, 40.0, 15.0)
-ANSWERS_START_POS = glm.vec3(0.0, 0.0, 0.0)
-ANSWERS_OFFSET = 2.5
-
 
 # pylint: disable=too-many-instance-attributes
 class App:
@@ -37,6 +33,7 @@ class App:
     """
 
     def __init__(self):
+        pygame.display.set_caption(WINDOW_CAPTION)
         self.window = pygame.display.set_mode(RESOLUTION, pygame.DOUBLEBUF | pygame.OPENGL)
         self.clock = pygame.time.Clock()
         self.mouse = Mouse()
@@ -45,29 +42,7 @@ class App:
         self.state = game.state.State()
         self.logic = game.logic.Logic(state=self.state)
         self.gui = game.gui.Gui()
-        self.scene = game.scene.Scene()
-
-        sphere = game.opengl_objects.sphere.Sphere()
-
-        for row in range(12):
-            self.scene.add_child(
-                game.model.feedback.Feedback(
-                    row,
-                    ANSWERS_START_POS,
-                    ANSWERS_OFFSET,
-                    self.state,
-                    sphere
-                )
-            )
-            self.scene.add_child(
-                game.model.answer.Answer(
-                    row,
-                    ANSWERS_START_POS,
-                    ANSWERS_OFFSET,
-                    self.state,
-                    sphere
-                )
-            )
+        self.scene = game.scene.Scene(state=self.state)
 
     def register_events(self):
         """Register event listeners used in the application."""
