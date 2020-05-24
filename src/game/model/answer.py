@@ -5,7 +5,7 @@ This module contains Answer class which is used to render single row of the answ
 import glm
 
 from game.state import State
-from game.objects3d.sphere import Sphere
+from game.opengl_objects.sphere import Sphere
 
 ACTIVE_COLOR = glm.vec3(0.0, 1.0, 0.0)
 INACTIVE_COLOR = glm.vec3(1.0, 1.0, 1.0)
@@ -47,7 +47,7 @@ class Answer:
         self.state = state
         self.sphere = sphere
 
-    def draw(self, view: glm.mat4, projection: glm.mat4):
+    def draw(self, view: glm.mat4, projection: glm.mat4, camera):
         """
         Draw answers on the screen using view and projection matrices.
 
@@ -68,6 +68,7 @@ class Answer:
                 view,
                 projection,
                 self.get_color(self.row, col, is_active),
+                camera,
                 show_wireframe=is_active
             )
 

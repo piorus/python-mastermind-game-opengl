@@ -9,7 +9,7 @@ and feedback rows displayed are equal to the number of checked rows.
 import glm
 
 from game.state import State
-from game.objects3d.sphere import Sphere
+from game.opengl_objects.sphere import Sphere
 
 
 class Feedback:
@@ -38,7 +38,7 @@ class Feedback:
         self.state = state
         self.sphere = sphere
 
-    def draw(self, view: glm.mat4, projection: glm.mat4):
+    def draw(self, view: glm.mat4, projection: glm.mat4, camera):
         """
         Draw feedback spheres for the given row on the screen.
 
@@ -57,6 +57,7 @@ class Feedback:
                 view,
                 projection,
                 self.get_color(self.row, col),
+                camera,
                 scale=glm.vec3(0.25, 0.25, 0.25)
             )
 

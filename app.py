@@ -17,7 +17,7 @@ import game.gui
 import game.logic
 import game.model.feedback
 import game.model.answer
-import game.objects3d.sphere
+import game.opengl_objects.sphere
 import game.scene
 import game.state
 from mouse import Mouse
@@ -50,7 +50,7 @@ class App:
         self.gui = game.gui.Gui()
         self.scene = game.scene.Scene()
 
-        sphere = game.objects3d.sphere.Sphere()
+        sphere = game.opengl_objects.sphere.Sphere()
 
         for row in range(12):
             self.scene.add_child(
@@ -92,12 +92,13 @@ class App:
         )
         # draw scene before gui to avoid transparency issues
         self.events.on(Events.DRAW, self.scene.draw)
-        # register gui events
+        # toggle controls texts visibility
         self.events.on(
             pygame.KEYDOWN,
             lambda event: self.gui.toggle_controls_visibility(),
             conditions={'key': pygame.K_TAB}
         )
+        # draw gui
         self.events.on(Events.DRAW, lambda event: self.gui.draw())
         # bind keys 1-6 as selection changers
         keys_to_bind = [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6]
@@ -108,18 +109,34 @@ class App:
                 conditions={'key': key},
                 data={'digit': index + 1}
             )
+
+        self.events.on(
+            pygame.KEYDOWN,
+            lambda event: post(Events.CHEATER_CHECK, {'state': self.state}),
+            conditions={'key': pygame.K_o}
+        )
+        self.events.on(Events.CHEATER_CHECK, lambda event: self.gui.on_cheater_check())
+        self.events.on(Events.CHEATER_CHECK, lambda event: self.state.disable_input())
+
         # reset game after pressing R
         self.events.on(
             pygame.KEYDOWN,
             lambda event: self.state.reset(),
             conditions={'key': pygame.K_r}
         )
-        self.events.on(Events.GAME_RESET, lambda event: self.gui.hide_results())
-        self.events.on(Events.GAME_WON, lambda event: self.gui.on_game_won(event.combination))
-        # self.events.on(Events.GAME_WON, lambda event: self.state.disable_input())
-        self.events.on(Events.GAME_OVER, lambda event: self.gui.on_game_over(event.combination))
-        # self.events.on(Events.GAME_OVER, lambda event: self.state.disable_input())
-
+        # change game results texts to the new combination after game reset
+        self.events.on(
+            Events.AFTER_GAME_RESET,
+            lambda event: self.gui.after_game_reset(event.state)
+        )
+        # hide previous game result after resetting the game
+        self.events.on(Events.GAME_RESET, lambda event: self.gui.hide_result())
+        # show result message and disable input when the game is won
+        self.events.on(Events.GAME_WON, lambda event: self.gui.on_game_won())
+        self.events.on(Events.GAME_WON, lambda event: self.state.disable_input())
+        # show result message and disable input when the game is lost
+        self.events.on(Events.GAME_OVER, lambda event: self.gui.on_game_over())
+        self.events.on(Events.GAME_OVER, lambda event: self.state.disable_input())
         # quit the application after clicking X in the window
         self.events.on(pygame.QUIT, lambda event: self.quit())
         # quit the application after pressing ESC key

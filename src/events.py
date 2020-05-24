@@ -95,7 +95,10 @@ class Events:
     GAME_OVER = pygame.USEREVENT + 1
     GAME_WON = pygame.USEREVENT + 2
     GAME_RESET = pygame.USEREVENT + 3
-    VALIDATION_ERROR = pygame.USEREVENT + 4
+    AFTER_GAME_RESET = pygame.USEREVENT + 4
+    CHEATER_CHECK = pygame.USEREVENT + 5
+    VALIDATION_ERROR = pygame.USEREVENT + 6
+
 
     def __init__(self):
         self.subject = Subject()

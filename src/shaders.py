@@ -19,8 +19,6 @@ class Shader:
     """
 
     def __init__(self, vertex_path: str, fragment_path: str):
-        print("\n=== Shader ===")
-        print("Step 1 - compile vertex & fragment shaders from the source files...")
         self.program = self.create_shader_program(
             self.create_shader(
                 GL.GL_FRAGMENT_SHADER,
@@ -42,16 +40,11 @@ class Shader:
         :param fragment_shader: fragment shader ID
         :return: shader program ID
         """
-        print("Step 2 - creating shader program...")
         program = GL.glCreateProgram()
-        print("Step 3 - attaching vertex & fragment shaders...")
         GL.glAttachShader(program, vertex_shader)
         GL.glAttachShader(program, fragment_shader)
         GL.glBindFragDataLocation(program, 0, "outColor")
-        print("Step 4 - linking shader program...")
         GL.glLinkProgram(program)
-        # pylint: disable=line-too-long
-        print("OK. Shader program was created successfully. (shader_program: %d)\n" % program)
 
         return program
 
@@ -80,7 +73,6 @@ class Shader:
         :param path: path to the shader source file
         :return: source file content
         """
-        print("Loading shader source from %s..." % path)
         with open(os.path.join(os.path.dirname(sys.argv[0]), path), 'r') as file:
             return file.read()
 
@@ -124,7 +116,7 @@ class Shader:
         :param name: uniform variable name
         :param value: float value to set
         """
-        GL.glUniform1f(self.get_location(name), glm.value_ptr(value))
+        GL.glUniform1f(self.get_location(name), GL.GLfloat(value))
 
     def set_vec2(self, name: str, value: glm.vec2):
         """

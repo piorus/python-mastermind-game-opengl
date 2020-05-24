@@ -101,5 +101,5 @@ def load_texture(
     )
 
 
-def combination_to_str(combination: list):
+def list_to_str(combination: list):
     return "".join([str(digit) for digit in combination])

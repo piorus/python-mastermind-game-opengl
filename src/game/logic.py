@@ -1,15 +1,13 @@
 """logic module"""
+from random import randint
 
 from game.state import State
 from events import Events, post
-from utils import combination_to_str
+from utils import list_to_str
 
 
-# pylint: disable=too-few-public-methods
-class Logic:
-    """Logic class is used to handle game logic."""
-
-    def __init__(self, state: State):
+class GameRules:
+    def __init__(self, state):
         self.state = state
 
     def check_row(self):
@@ -20,9 +18,13 @@ class Logic:
         In case if game is not won or not over, a feedback is generated
         for the answered combination.
         """
+        if not self.state.input_enabled:
+            return
 
         current_row = self.state.current_row
         answer = self.state.get_answer(current_row)
+        combination = self.state.combination
+
         if 0 in answer:
             print('Błąd. Nie wybrano wszystkich wartości z wiersza.')
             post(
@@ -31,14 +33,13 @@ class Logic:
             )
             return
 
-        if answer == self.state.combination:
-            str_combination = combination_to_str(self.state.combination)
+        if answer == combination:
+            str_combination = list_to_str(self.state.combination)
             print('WYGRAŁEŚ. Gratulacje. Poprawna kombinacja: %s' % str_combination)
             post(Events.GAME_WON, {'combination': str_combination})
             return
 
         indices_to_check = []
-        combination = self.state.combination
 
         for index, selection in enumerate(answer):
             if combination[index] == selection:
@@ -54,7 +55,7 @@ class Logic:
                 self.state.append_feedback_digit(2)
 
         if current_row == 0:
-            str_combination = combination_to_str(self.state.combination)
+            str_combination = list_to_str(self.state.combination)
             print('PRZEGRAŁEŚ. Poprawna kombinacja: %s' % str_combination)
             post(Events.GAME_OVER, {'combination': str_combination})
             return
@@ -62,7 +63,47 @@ class Logic:
         self.state.current_row -= 1
 
     def set_answer_digit(self, digit):
-        self.state.set_answer_digit(digit)
+        if self.state.input_enabled:
+            self.state.set_answer_digit(digit)
 
     def change_active_index(self):
-        self.state.change_active_index()
+        if self.state.input_enabled:
+            self.state.change_active_index()
+
+
+class CheaterGameRules(GameRules):
+    def __init__(self, state):
+        super().__init__(state)
+
+    def set_answer_digit(self, digit):
+        if self.state.input_enabled:
+            # pure evil
+            self.state.set_answer_digit(randint(0, 6))
+
+
+# pylint: disable=too-few-public-methods
+class Logic:
+    """Logic class is used to handle game logic."""
+
+    def __init__(self, state: State):
+        self.state = state
+        self.rules = GameRules(state)
+        self.cheater_rules = CheaterGameRules(state)
+
+    def check_row(self):
+        if self.state.cheater:
+            self.cheater_rules.check_row()
+        else:
+            self.rules.check_row()
+
+    def set_answer_digit(self, digit):
+        if self.state.cheater:
+            self.cheater_rules.set_answer_digit(digit)
+        else:
+            self.rules.set_answer_digit(digit)
+
+    def change_active_index(self):
+        if self.state.cheater:
+            self.cheater_rules.change_active_index()
+        else:
+            self.rules.change_active_index()

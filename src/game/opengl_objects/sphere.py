@@ -6,7 +6,8 @@ import glm
 
 import shaders
 from vertex_data import SphereVertexData
-from game.objects3d.opengl_object import OpenGLObject
+from game.opengl_objects.opengl_object import OpenGLObject
+from camera import Camera
 
 
 # pylint: disable=too-many-arguments,too-few-public-methods
@@ -24,7 +25,7 @@ class Sphere(OpenGLObject):
         self.vertices = data.vertices
         self.indices = data.indices
         self.indices_count = data.indices_count
-        self.stride = 3 * sizeof(GL.GLfloat)
+        self.stride = 6 * sizeof(GL.GLfloat)
         self.shader = shaders.Shader('shaders/sphere.vert', 'shaders/sphere.frag')
         self.set_attrib_pointer(
             index=0,
@@ -32,6 +33,13 @@ class Sphere(OpenGLObject):
             attrib_type=GL.GL_FLOAT,
             normalized=GL.GL_FALSE,
             offset=0
+        )
+        self.set_attrib_pointer(
+            index=1,
+            size=3,
+            attrib_type=GL.GL_FLOAT,
+            normalized=GL.GL_FALSE,
+            offset=3 * sizeof(GL.GLfloat)
         )
 
         self.buffer_data_to_gpu()
@@ -42,6 +50,7 @@ class Sphere(OpenGLObject):
             view: glm.mat4,
             projection: glm.mat4,
             color: glm.vec3,
+            camera: Camera,
             scale: glm.vec3 = glm.vec3(1.0, 1.0, 1.0),
             show_wireframe: bool = False
     ):
@@ -52,15 +61,33 @@ class Sphere(OpenGLObject):
         :param view: 4x4 view matrix
         :param projection: 4x4 projection matrix
         :param color: glm.vec3 representing color of the sphere
+        :param camera: Camera object
         :param scale: glm.vec3 representing scale of the sphere
         :param show_wireframe: flag that determine if wireframe should be displayed
         :return:
         """
         self.shader.use()
+
+        light_pos = glm.vec3(-5.0, 5.0, 15.0)
+        diffuse_color = color * glm.vec3(0.5)
+        ambient_color = diffuse_color * glm.vec3(0.2)
+
+        self.shader.set_vec3('lightPos', light_pos)
+        self.shader.set_vec3('viewPos', camera.pos)
+
+        # light properties
+        self.shader.set_vec3("light.ambient", ambient_color)
+        self.shader.set_vec3("light.diffuse", diffuse_color)
+        self.shader.set_vec3("light.specular", glm.vec3(1.0, 1.0, 1.0))
+        # material properties
+        self.shader.set_vec3("material.ambient", glm.vec3(1.0, 1.0, 1.0))
+        self.shader.set_vec3("material.diffuse", glm.vec3(1.0, 1.0, 1.0))
+        self.shader.set_vec3("material.specular", glm.vec3(0.5, 0.5, 0.5))
+        self.shader.set_float("material.shininess", 16.0)
+
         self.shader.set_mat4('model', glm.scale(model, scale))
         self.shader.set_mat4('view', view)
         self.shader.set_mat4('projection', projection)
-        self.shader.set_vec3('aColor', color)
 
         if show_wireframe:
             GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE)

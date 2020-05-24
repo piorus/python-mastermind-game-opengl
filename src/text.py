@@ -117,7 +117,7 @@ class Text:
             pygameize_color(self.bg_color)
         )
         # copy surface data to openGL texture
-        surface_to_texture(surface, self.texture, True)
+        self.texture = surface_to_texture(surface, flipped=True)
         # calc vertex positions
         res_x, res_y = pygame.display.get_surface().get_size()
         width, height = surface.get_size()
@@ -176,16 +176,16 @@ class Text:
         """
         Draw text on the screen.
         """
-        if not self.is_prepared:
-            return
-
         GL.glUseProgram(self.shader)
         GL.glActiveTexture(GL.GL_TEXTURE0)
         GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
         GL.glBindVertexArray(self.vao)
         GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, self.ebo)
+
+        if not self.is_prepared:
+            return
+
         GL.glDrawElements(GL.GL_TRIANGLES, 6, GL.GL_UNSIGNED_INT, None)
-        GL.glBindVertexArray(0)
 
     def set_text(self, text: str):
         """

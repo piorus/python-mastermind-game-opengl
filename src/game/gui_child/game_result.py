@@ -14,15 +14,13 @@ class GameResult:
         self.visible = False
         self.text_objects = []
 
-        self.text_objects.append(
-            text.Text(
-                heading_text,
-                shader,
-                position=heading_position,
-                font_size=heading_font_size,
-                font_color=heading_color,
-                bg_color=heading_bg_color
-            )
+        self.heading = text.Text(
+            heading_text,
+            shader,
+            position=heading_position,
+            font_size=heading_font_size,
+            font_color=heading_color,
+            bg_color=heading_bg_color
         )
 
         self.combination_text_object = text.Text(
@@ -33,6 +31,7 @@ class GameResult:
             font_color=(1.0, 1.0, 1.0, 1.0)
         )
 
+        self.text_objects.append(self.heading)
         self.text_objects.append(self.combination_text_object)
 
         self.text_objects.append(

@@ -6,7 +6,8 @@ It displays game controls.
 import text
 from game.gui_child.controls import Controls
 from game.gui_child.game_result import GameResult
-
+from utils import list_to_str
+from game.state import State
 
 class Gui:
     """
@@ -33,7 +34,13 @@ class Gui:
             heading_color=(0.0, 1.0, 0.0, 1.0),
         )
 
-        self.children = [self.game_over, self.game_won, self.controls]
+        self.cheater = GameResult(
+            shader=default_text_shader,
+            heading_text='Tere fere.',
+            heading_color=(0.0, 1.0, 1.0, 1.0),
+        )
+
+        self.children = [self.game_won, self.game_over, self.controls, self.cheater]
 
     def draw(self):
         """Draws text lines on the screen"""
@@ -44,16 +51,26 @@ class Gui:
     def toggle_controls_visibility(self):
         self.controls.toggle_visiblity()
 
-    def hide_results(self):
+    def hide_result(self):
         if self.game_over.visible:
             self.game_over.hide()
         if self.game_won.visible:
             self.game_won.hide()
+        if self.cheater.visible:
+            self.cheater.hide()
 
-    def on_game_won(self, combination):
-        self.game_won.set_combination(combination)
+    def after_game_reset(self, state: State):
+        combination_str = list_to_str(state.combination)
+        self.game_over.set_combination(combination_str)
+        self.game_won.set_combination(combination_str)
+        self.cheater.set_combination(combination_str)
+        self.cheater.heading.set_text('OSZUST! Złapałeś/łaś mnie!' if state.cheater else 'Tere fere.')
+
+    def on_cheater_check(self):
+        self.cheater.show()
+
+    def on_game_won(self):
         self.game_won.show()
 
-    def on_game_over(self, combination):
-        self.game_over.set_combination(combination)
+    def on_game_over(self):
         self.game_over.show()

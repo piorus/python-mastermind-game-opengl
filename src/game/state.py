@@ -2,6 +2,7 @@
 
 from typing import List
 from events import Events, post
+from random import randint
 
 class State:
     """
@@ -25,8 +26,12 @@ class State:
         self.feedback = [[] for i in range(12)]
         self.active_indices = [1 if i == 0 else 0 for i in range(4)]
         self.current_row = len(self.answers) - 1
+        self.input_enabled = True
+        self.cheater = bool(randint(0, 1))
 
-        print('combination:', self.combination)
+        print('Combination:', self.combination)
+        print('Rules:', 'Correct rules enabled.' if not self.cheater else 'CHEATER ENABLED')
+        post(Events.AFTER_GAME_RESET, {'state': self})
 
     def reset(self):
         """Game reset."""
@@ -107,3 +112,6 @@ class State:
         row = row if row else self.current_row
         col = col if col else self.get_active_index()
         self.answers[row][col] = digit
+
+    def disable_input(self):
+        self.input_enabled = False

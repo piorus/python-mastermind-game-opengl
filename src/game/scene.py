@@ -16,7 +16,7 @@ class Scene:
         :param event: Events.DRAW event
         """
         for child in self.children:
-            child.draw(event.view, event.projection)
+            child.draw(event.view, event.projection, event.camera)
 
     def add_child(self, child):
         """
