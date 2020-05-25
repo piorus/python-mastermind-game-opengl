@@ -1,12 +1,11 @@
 import os
 import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
 import OpenGL.GL as GL
 import pygame
 
 from app import App
-
-sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
 
 def main():
