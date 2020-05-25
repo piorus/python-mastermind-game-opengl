@@ -23,6 +23,7 @@ RESOLUTION = (1024, 768)
 WINDOW_CAPTION = 'Piotr Rusin - Projekt zaliczeniowy z Języków Symbolicznych (rok 2020)'
 CAMERA_FRONT = glm.vec3(10.0, 40.0, 15.0)
 
+
 # pylint: disable=too-many-instance-attributes
 class App:
     """
