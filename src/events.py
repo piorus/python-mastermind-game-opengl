@@ -86,8 +86,8 @@ class Subject:
         """
         if event.type in self.event_listeners:
             for event_listener in self.event_listeners[event.type]:
-                if hasattr(event_listener, 'conditions') \
-                        and not check_conditions(event, event_listener):
+                if (hasattr(event_listener, 'conditions')
+                        and not check_conditions(event, event_listener)):
                     continue
 
                 if event_listener.data:
