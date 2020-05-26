@@ -184,8 +184,8 @@ class Camera:
         :param mouse: input.Mouse
         :param constrain_pitch: flag that determine if pitch should be constrained
         """
-        self.yaw += (mouse.offset_x * self.mouse_sensivity)
-        self.pitch += (mouse.offset_y * self.mouse_sensivity)
+        self.yaw += (mouse.x_offset * self.mouse_sensivity)
+        self.pitch += (mouse.y_offset * self.mouse_sensivity)
 
         if constrain_pitch:
             if self.pitch > 89.0:

@@ -14,11 +14,11 @@ class Mouse:
 
     def __init__(self):
         self.first_time = True
-        self.last_x = 0.0
-        self.last_y = 0.0
+        self.x_last = 0.0
+        self.y_last = 0.0
 
-        self.offset_x = 0.0
-        self.offset_y = 0.0
+        self.x_offset = 0.0
+        self.y_offset = 0.0
 
     def on_mouse_move(self, event):
         """
@@ -27,11 +27,11 @@ class Mouse:
         :param event: pygame Event
         """
         if self.first_time:
-            self.last_x, self.last_y = pygame.mouse.get_pos()
+            self.x_last, self.y_last = pygame.mouse.get_pos()
             self.first_time = False
 
-        pos_x, pos_y = event.pos
-        self.offset_x = pos_x - self.last_x
-        self.offset_y = self.last_y - pos_y
-        self.last_x = pos_x
-        self.last_y = pos_y
+        x_pos, y_pos = event.pos
+        self.x_offset = x_pos - self.x_last
+        self.y_offset = self.y_last - y_pos
+        self.x_last = x_pos
+        self.y_last = y_pos
