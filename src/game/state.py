@@ -30,6 +30,20 @@ class State:
     current_row: int
 
     def __init__(self):
+        self.combination = []
+        self.answers = []
+        self.feedback = []
+        self.active_indices = []
+        self.current_row = 0
+        self.input_enabled = True
+        self.cheater = False
+
+        events.post(events.GAME_RESET, {})
+
+    def reset(self):
+        """
+        Game reset.
+        """
         self.combination = [randint(1, 6) for i in range(COMBINATION_LENGTH)]
         self.answers = [[0 for j in range(COMBINATION_LENGTH)] for i in range(NUMBER_OF_TRIES)]
         self.feedback = [[] for i in range(NUMBER_OF_TRIES)]
@@ -40,14 +54,9 @@ class State:
 
         print('Combination:', self.combination)
         print('Rules:', 'Correct rules enabled.' if not self.cheater else 'CHEATER ENABLED')
+
         events.post(events.AFTER_GAME_RESET, {'state': self})
 
-    def reset(self):
-        """
-        Game reset.
-        """
-        self.__init__()
-        events.post(events.GAME_RESET, {})
 
     def get_active_index(self):
         """

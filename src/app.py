@@ -97,16 +97,20 @@ class App:
         # reset game after pressing R
         self.events.on(
             pygame.KEYDOWN,
-            lambda event: self.state.reset(),
+            lambda event: events.post(events.GAME_RESET, {}),
             conditions={'key': pygame.K_r}
         )
-        # change game results texts to the new combination after game reset
+        self.events.on(
+            events.GAME_RESET,
+            lambda event: self.state.reset()
+        )
+        # change game results texts to the new combination after resetting the game
         self.events.on(
             events.AFTER_GAME_RESET,
             lambda event: self.gui.reset_gui_texts(event.state)
         )
         # hide previous game result after resetting the game
-        self.events.on(events.GAME_RESET, lambda event: self.gui.hide_result())
+        self.events.on(events.AFTER_GAME_RESET, lambda event: self.gui.hide_result())
         # show result message and disable input when the game is won
         self.events.on(events.GAME_WON, lambda event: self.gui.on_game_won())
         # disable input, wait for reset
