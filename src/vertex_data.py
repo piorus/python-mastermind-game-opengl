@@ -14,7 +14,7 @@ from src import utils
 SPHERE_STACK_COUNT = 36
 SPHERE_SECTOR_COUNT = 18
 SPHERE_RADIUS = 3
-SPHERE_LENGTH_INV = 1.0
+SPHERE_RADIUS_INVERTED = 1.0 / SPHERE_RADIUS
 
 
 # pylint: disable=too-few-public-methods
@@ -55,9 +55,9 @@ class SphereVertexData:
                 _x = _xy * cos(sector_angle)
                 _y = _xy * sin(sector_angle)
 
-                _nx = _x * SPHERE_LENGTH_INV
-                _ny = _y * SPHERE_LENGTH_INV
-                _nz = _z * SPHERE_LENGTH_INV
+                _nx = _x * SPHERE_RADIUS_INVERTED
+                _ny = _y * SPHERE_RADIUS_INVERTED
+                _nz = _z * SPHERE_RADIUS_INVERTED
 
                 self.vertices += [
                     *glm.normalize(glm.vec3(_x, _y, _z)), # position
