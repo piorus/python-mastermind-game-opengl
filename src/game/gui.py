@@ -4,11 +4,11 @@ It displays game controls.
 """
 import pygame
 
-from events import Events
-from game.gui_children import Controls, GameResult, ValidationError
-from game.state import State
-import text
-from utils import list_to_str
+from src.events import Events
+from src.game import gui_children
+from src.game.state import State
+from src import text
+from src import utils
 
 
 class Gui:
@@ -22,7 +22,7 @@ class Gui:
     def __init__(self):
         default_text_shader = text.get_default_shader()
 
-        self.controls = Controls(shader=default_text_shader)
+        self.controls = gui_children.Controls(shader=default_text_shader)
 
         self.combination_text_object = text.Text(
             'Poprawna kombinacja: -',
@@ -32,28 +32,28 @@ class Gui:
             font_color=(1.0, 1.0, 1.0, 1.0)
         )
 
-        self.game_over = GameResult(
+        self.game_over = gui_children.GameResult(
             shader=default_text_shader,
             combination_text_object=self.combination_text_object,
             heading_text='PRZEGRAŁEŚ',
             heading_color=(1.0, 0.0, 0.0, 1.0),
         )
 
-        self.game_won = GameResult(
+        self.game_won = gui_children.GameResult(
             shader=default_text_shader,
             combination_text_object=self.combination_text_object,
             heading_text='WYGRAŁEŚ! GRATULACJE.',
             heading_color=(0.0, 1.0, 0.0, 1.0),
         )
 
-        self.cheater = GameResult(
+        self.cheater = gui_children.GameResult(
             shader=default_text_shader,
             combination_text_object=self.combination_text_object,
             heading_text='Tere fere.',
             heading_color=(0.0, 1.0, 1.0, 1.0),
         )
 
-        self.validation_error = ValidationError(shader=default_text_shader)
+        self.validation_error = gui_children.ValidationError(shader=default_text_shader)
 
         self.children = [
             self.game_won,
@@ -105,7 +105,7 @@ class Gui:
         :param state: State object
         :return: None
         """
-        combination_str = list_to_str(state.combination)
+        combination_str = utils.list_to_str(state.combination)
         self.combination_text_object.set_text('Poprawna kombinacja: %s' % combination_str)
         self.cheater.set_heading_text(
             'OSZUST! Złapałeś/łaś mnie!' if state.cheater else 'Tere fere.'

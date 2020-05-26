@@ -5,8 +5,8 @@ import math
 import glm
 import pygame
 
-from events import Events
-from mouse import Mouse
+from src.events import Events
+from src.mouse import Mouse
 
 YAW = -90.0
 PITCH = -90.0

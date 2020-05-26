@@ -1,4 +1,5 @@
 """events module"""
+
 import pygame
 
 

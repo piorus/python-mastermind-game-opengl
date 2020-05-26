@@ -2,7 +2,7 @@
 
 import glm
 
-import text
+from src import text
 
 CONTROLS_TEXTS = [
     'W, S, A, D - ruch kamerą',

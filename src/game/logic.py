@@ -1,9 +1,9 @@
 """logic module"""
 from random import randint
 
-from events import Events, post
-from game.state import State
-from utils import list_to_str
+from src.events import Events, post
+from src.game.state import State
+from src import utils
 
 
 class GameRules:
@@ -41,7 +41,7 @@ class GameRules:
         if answer == combination:
             print(
                 'WYGRAŁEŚ. Gratulacje. Poprawna kombinacja: %s'
-                % list_to_str(self.state.combination)
+                % utils.list_to_str(self.state.combination)
             )
             post(Events.GAME_WON, {})
             return

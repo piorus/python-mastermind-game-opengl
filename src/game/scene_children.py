@@ -1,9 +1,9 @@
 """scene_children module with all of the scene children."""
 import glm
 
-from camera import Camera
-from game.opengl_objects import Sphere
-from game.state import State
+from src import camera
+from src.game import opengl_objects
+from src.game import state
 
 ACTIVE_COLOR = glm.vec3(0.0, 1.0, 0.0)
 INACTIVE_COLOR = glm.vec3(1.0, 1.0, 1.0)
@@ -18,10 +18,12 @@ SELECTION_COLORS = [
     glm.vec3(1.000, 1.000, 0.000)
 ]
 
+
 # pylint: disable=too-few-public-methods
 class SceneChild:
     """Base class for scene child."""
-    def draw(self, view: glm.mat4, projection: glm.mat4, camera: Camera):
+
+    def draw(self, view: glm.mat4, projection: glm.mat4, camera: camera.Camera):
         """Draw child on the screen using view and projection matrices."""
 
 
@@ -42,8 +44,8 @@ class Answer(SceneChild):
             answer_row: int,
             start_pos: glm.vec3,
             offset: float,
-            state: State,
-            sphere: Sphere
+            state: state.State,
+            sphere: opengl_objects.Sphere
     ):
         self.row = answer_row
         self.start_pos = start_pos
@@ -51,7 +53,7 @@ class Answer(SceneChild):
         self.state = state
         self.sphere = sphere
 
-    def draw(self, view: glm.mat4, projection: glm.mat4, camera: Camera):
+    def draw(self, view: glm.mat4, projection: glm.mat4, camera: camera.Camera):
         """
         Draw answers on the screen using view and projection matrices.
 
@@ -125,8 +127,8 @@ class Feedback(SceneChild):
             feedback_row: int,
             start_pos: glm.vec3,
             answers_offset: float,
-            state: State,
-            sphere: Sphere
+            state: state.State,
+            sphere: opengl_objects.Sphere
     ):
         self.row = feedback_row
         self.start_pos = start_pos
@@ -135,7 +137,7 @@ class Feedback(SceneChild):
         self.state = state
         self.sphere = sphere
 
-    def draw(self, view: glm.mat4, projection: glm.mat4, camera: Camera):
+    def draw(self, view: glm.mat4, projection: glm.mat4, camera: camera.Camera):
         """
         Draw feedback spheres for the given row on the screen.
 

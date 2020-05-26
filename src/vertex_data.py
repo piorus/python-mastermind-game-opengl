@@ -9,7 +9,7 @@ from math import pi, sin, cos
 import glm
 import OpenGL.GLU as GLU
 
-import utils
+from src import utils
 
 SPHERE_STACK_COUNT = 36
 SPHERE_SECTOR_COUNT = 18
@@ -26,8 +26,6 @@ class SphereVertexData:
     INDICES_TYPE = GLU.GLint
 
     def __init__(self):
-        super().__init__()
-
         self.vertices = []
         self.vertices_count = 0
         self.indices = []

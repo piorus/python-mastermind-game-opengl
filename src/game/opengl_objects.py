@@ -2,11 +2,11 @@
 from ctypes import sizeof, c_void_p
 
 import glm
-import OpenGL.GL as GL
+from OpenGL import GL
 
-from camera import Camera
-import shaders
-from vertex_data import SphereVertexData
+from src.camera import Camera
+from src import shaders
+from src import vertex_data
 
 
 # pylint: disable=too-many-arguments
@@ -105,7 +105,7 @@ class Sphere(OpenGLObject):
     def __init__(self):
         super().__init__()
 
-        data = SphereVertexData().load()
+        data = vertex_data.SphereVertexData().load()
 
         self.vertices = data.vertices
         self.indices = data.indices

@@ -7,7 +7,7 @@ import os
 import sys
 
 import glm
-import OpenGL.GL as GL
+from OpenGL import GL
 
 
 class Shader:

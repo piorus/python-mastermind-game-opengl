@@ -1,11 +1,7 @@
-import os
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
-
-import OpenGL.GL as GL
+from OpenGL import GL
 import pygame
 
-from app import App
+from src import app
 
 
 def main():
@@ -17,14 +13,14 @@ def main():
     """
     pygame.init()
 
-    app = App()
+    application = app.App()
 
     GL.glEnable(GL.GL_DEPTH_TEST)
     GL.glEnable(GL.GL_BLEND)  # blend is used in GUI texts
     GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
 
-    app.register_events()
-    app.run()
+    application.register_events()
+    application.run()
 
 
 if __name__ == '__main__':

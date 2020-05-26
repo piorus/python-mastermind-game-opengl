@@ -7,11 +7,11 @@ text module is handling OpenGL text rendering by copying pygame surface into the
 from ctypes import sizeof, c_void_p
 
 import glm
-import OpenGL.GL as GL
+from OpenGL import GL
 import pygame
 
-from shaders import Shader
-from utils import surface_to_texture, type_cast
+from src.shaders import Shader
+from src import utils
 
 DEFAULT_VERTEX_SHADER = '''
     #version 330 core
@@ -131,7 +131,7 @@ class Text:
             pygameize_color(self.bg_color)
         )
         # copy surface data to openGL texture
-        self.texture = surface_to_texture(surface, flipped=True)
+        self.texture = utils.surface_to_texture(surface, flipped=True)
 
         GL.glBindVertexArray(self.vao)
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
@@ -149,14 +149,14 @@ class Text:
             self._x - offset_x, self._y - offset_y, 0.0, 0.0,  # bottom left
             self._x - offset_x, self._y + offset_y, 0.0, 1.0,  # top left
         ]
-        vertices = type_cast(vertices, GL.GLfloat)
+        vertices = utils.type_cast(vertices, GL.GLfloat)
         GL.glBufferData(GL.GL_ARRAY_BUFFER, GL.sizeof(vertices), vertices, GL.GL_STATIC_DRAW)
 
         indices = [
             0, 1, 3,
             1, 2, 3
         ]
-        indices = type_cast(indices, GL.GLuint)
+        indices = utils.type_cast(indices, GL.GLuint)
         GL.glBufferData(
             target=GL.GL_ELEMENT_ARRAY_BUFFER,
             size=sizeof(indices),

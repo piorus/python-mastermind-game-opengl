@@ -4,7 +4,7 @@ Utility functions used in the application.
 
 import os
 
-import OpenGL.GL as GL
+from OpenGL import GL
 import pygame
 
 

@@ -3,7 +3,7 @@
 from random import randint
 from typing import List
 
-from events import Events, post
+from src.events import Events, post
 
 
 class State:

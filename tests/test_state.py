@@ -1,19 +1,14 @@
 """State class tests."""
-
-import os
-import sys
 import unittest
-sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), 'src'))
 
 import pygame
 
-import game.state
+from src.game import state
 
 
-class StateTest(unittest.TestCase):
+class TestState(unittest.TestCase):
     def setUp(self) -> None:
-        pygame.init()
-        self.state = game.state.State()
+        self.state = state.State()
 
     def test_reset(self):
         self.state.reset()
@@ -56,3 +51,8 @@ class StateTest(unittest.TestCase):
     def test_disable_input(self):
         self.state.disable_input()
         self.assertFalse(self.state.input_enabled)
+
+
+if __name__ == '__main__':
+    pygame.init()
+    unittest.main()

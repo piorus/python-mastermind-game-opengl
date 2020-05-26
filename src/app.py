@@ -7,17 +7,17 @@ This is the place where main game loop is located (run() method).
 import sys
 
 import glm
-import OpenGL.GL as GL
+from OpenGL import GL
 import pygame
 
-from camera import Camera
-from events import Events, post
-import game.gui
-import game.logic
-import game.scene
-import game.scene_children
-import game.state
-from mouse import Mouse
+from src import camera
+from src import mouse
+from src.events import Events, post
+from src.game import gui
+from src.game import logic
+from src.game import scene
+from src.game import state
+
 
 RESOLUTION = (1024, 768)
 WINDOW_CAPTION = 'Piotr Rusin - Projekt zaliczeniowy z Języków Symbolicznych (rok 2020)'
@@ -38,13 +38,13 @@ class App:
         pygame.display.set_caption(WINDOW_CAPTION)
         self.window = pygame.display.set_mode(RESOLUTION, pygame.DOUBLEBUF | pygame.OPENGL)
         self.clock = pygame.time.Clock()
-        self.mouse = Mouse()
-        self.camera = Camera(CAMERA_FRONT)
+        self.mouse = mouse.Mouse()
+        self.camera = camera.Camera(CAMERA_FRONT)
         self.events = Events()
-        self.state = game.state.State()
-        self.logic = game.logic.Logic(state=self.state)
-        self.gui = game.gui.Gui()
-        self.scene = game.scene.Scene(state=self.state)
+        self.state = state.State()
+        self.logic = logic.Logic(state=self.state)
+        self.gui = gui.Gui()
+        self.scene = scene.Scene(state=self.state)
 
     def register_events(self):
         """
