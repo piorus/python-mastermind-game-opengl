@@ -1,4 +1,5 @@
 """events module"""
+import collections
 
 import pygame
 
@@ -59,7 +60,7 @@ class Subject:
     """
 
     def __init__(self):
-        self.event_listeners = {}
+        self.event_listeners = collections.defaultdict(list)
 
     def register_event_listener(self, event_listener: EventListener):
         """
@@ -68,10 +69,7 @@ class Subject:
         :param event_listener: event listener to register
         :return: None
         """
-        if event_listener.event_type in self.event_listeners:
-            self.event_listeners[event_listener.event_type].append(event_listener)
-        else:
-            self.event_listeners[event_listener.event_type] = [event_listener]
+        self.event_listeners[event_listener.event_type].append(event_listener)
 
     def invoke_event_callbacks(self, event):
         """
