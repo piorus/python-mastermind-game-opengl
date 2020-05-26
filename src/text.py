@@ -114,7 +114,6 @@ class Text:
         self.ebo = GL.glGenBuffers(1)
 
         self.is_prepared = False
-        self.load()
 
     def load(self):
         """
@@ -195,7 +194,7 @@ class Text:
         Draw text on the screen.
         """
         if not self.is_prepared:
-            return
+            self.load()
 
         GL.glUseProgram(self.shader)
         GL.glActiveTexture(GL.GL_TEXTURE0)
