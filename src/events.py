@@ -68,7 +68,7 @@ class Subject:
         :param event_listener: event listener to register
         :return: None
         """
-        if event_listener.event_type in self.event_listeners.keys():
+        if event_listener.event_type in self.event_listeners:
             self.event_listeners[event_listener.event_type].append(event_listener)
         else:
             self.event_listeners[event_listener.event_type] = [event_listener]
@@ -86,7 +86,7 @@ class Subject:
         :param event: event to check
         :return: None
         """
-        if event.type in self.event_listeners.keys():
+        if event.type in self.event_listeners:
             for event_listener in self.event_listeners[event.type]:
                 if hasattr(event_listener, 'conditions') \
                         and not check_conditions(event, event_listener):
