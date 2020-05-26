@@ -2,6 +2,7 @@
 This module is used to draw Graphical User Interface on the screen.
 It displays game controls.
 """
+import glm
 import pygame
 
 from src import events
@@ -9,6 +10,14 @@ from src import text
 from src import utils
 from src.game import gui_children
 from src.game import state
+
+COLOR_RED = glm.vec4(1.0, 0.0, 0.0, 1.0)
+COLOR_GREEN = glm.vec4(0.0, 1.0, 0.0, 1.0)
+COLOR_LIGHT_BLUE = glm.vec4(0.0, 1.0, 1.0, 1.0)
+COLOR_WHITE = glm.vec4(1.0, 1.0, 1.0, 1.0)
+
+DEFAULT_COMBINATION_TEXT_POSITION = glm.vec2(0.0, 0.11)
+DEFAULT_COMBINATION_TEXT_FONT_SIZE = 35
 
 
 class Gui:
@@ -27,30 +36,30 @@ class Gui:
         self.combination_text_object = text.Text(
             'Poprawna kombinacja: -',
             default_text_shader,
-            position=(0.0, 0.11),
-            font_size=35,
-            font_color=(1.0, 1.0, 1.0, 1.0)
+            position=DEFAULT_COMBINATION_TEXT_POSITION,
+            font_size=DEFAULT_COMBINATION_TEXT_FONT_SIZE,
+            font_color=COLOR_WHITE
         )
 
         self.game_over = gui_children.GameResult(
             shader=default_text_shader,
             combination_text_object=self.combination_text_object,
             heading_text='PRZEGRAŁEŚ',
-            heading_color=(1.0, 0.0, 0.0, 1.0),
+            heading_color=COLOR_RED,
         )
 
         self.game_won = gui_children.GameResult(
             shader=default_text_shader,
             combination_text_object=self.combination_text_object,
             heading_text='WYGRAŁEŚ! GRATULACJE.',
-            heading_color=(0.0, 1.0, 0.0, 1.0),
+            heading_color=COLOR_GREEN,
         )
 
         self.cheater = gui_children.GameResult(
             shader=default_text_shader,
             combination_text_object=self.combination_text_object,
             heading_text='Tere fere.',
-            heading_color=(0.0, 1.0, 1.0, 1.0),
+            heading_color=COLOR_LIGHT_BLUE,
         )
 
         self.validation_error = gui_children.ValidationError(shader=default_text_shader)

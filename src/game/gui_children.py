@@ -15,6 +15,21 @@ CONTROLS_TEXTS = [
     'TAB - pokaż / ukryj GUI',
 ]
 
+DEFAULT_CONTROLS_COLOR = glm.vec4(1.0, 1.0, 0.0, 1.0)
+DEFAULT_CONTROLS_FONT_SIZE = 35
+
+DEFAULT_HEADING_POSITION = glm.vec2(0.0, 0.2)
+DEFAULT_HEADING_COLOR = glm.vec4(1.0, 0.0, 0.0, 1.0)
+DEFAULT_HEADING_FONT_SIZE = 65
+DEFAULT_HEADING_BACKGROUND_COLOR = glm.vec4(0.0, 0.0, 0.0, 0.0)
+
+DEFAULT_RESTART_POSITION = glm.vec2(0.0, 0.0)
+DEFAULT_RESTART_COLOR = glm.vec4(1.0, 1.0, 0.0, 1.0)
+DEFAULT_RESTART_FONT_SIZE = 35
+
+DEFAULT_VALIDATION_ERROR_POSITION = glm.vec2(0.0, -0.8)
+DEFAULT_VALIDATION_ERROR_FONT_COLOR = glm.vec4(1.0, 0.0, 0.0, 1.0)
+DEFAULT_VALIDATION_ERROR_FONT_SIZE = 35
 
 class GuiChild:
     """
@@ -75,8 +90,8 @@ class Controls(GuiChild):
                     text_to_draw,
                     shader,
                     position=glm.vec2(0.0, 0.9 - 0.05 * index),
-                    font_size=35,
-                    font_color=glm.vec4(1.0, 1.0, 0.0, 1.0)
+                    font_color=DEFAULT_CONTROLS_COLOR,
+                    font_size=DEFAULT_CONTROLS_FONT_SIZE
                 )
             )
 
@@ -97,10 +112,10 @@ class GameResult(GuiChild):
             shader,
             combination_text_object: text.Text,
             heading_text,
-            heading_position=(0.0, 0.2),
-            heading_color=(1.0, 0.0, 0.0, 1.0),
-            heading_font_size=65,
-            heading_bg_color=(0.0, 0.0, 0.0, 0.0),
+            heading_position=DEFAULT_HEADING_POSITION,
+            heading_color=DEFAULT_HEADING_COLOR,
+            heading_font_size=DEFAULT_HEADING_FONT_SIZE,
+            heading_bg_color=DEFAULT_HEADING_BACKGROUND_COLOR,
     ):
         super().__init__()
 
@@ -119,9 +134,9 @@ class GameResult(GuiChild):
             text.Text(
                 'Naciśnij R aby spróbować ponownie.',
                 shader,
-                position=(0.0, 0.0),
-                font_size=35,
-                font_color=(1.0, 1.0, 0.0, 1.0)
+                position=DEFAULT_RESTART_POSITION,
+                font_color=DEFAULT_RESTART_COLOR,
+                font_size=DEFAULT_RESTART_FONT_SIZE
             )
         )
 
@@ -149,9 +164,9 @@ class ValidationError(GuiChild):
         self.text_object = text.Text(
             '',
             shader,
-            position=(0.0, -0.8),
-            font_size=35,
-            font_color=(1.0, 0.0, 0.0, 1.0)
+            position=DEFAULT_VALIDATION_ERROR_POSITION,
+            font_color=DEFAULT_VALIDATION_ERROR_FONT_COLOR,
+            font_size=DEFAULT_VALIDATION_ERROR_FONT_SIZE
         )
 
         self.children.append(self.text_object)
