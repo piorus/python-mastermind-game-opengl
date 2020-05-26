@@ -41,6 +41,11 @@ DEFAULT_FRAGMENT_SHADER = '''
     }
 '''
 
+DEFAULT_POSITION = glm.vec2(0.0, 0.0)
+DEFAULT_FONT_NAME = 'dejavusans'
+DEFAULT_FONT_SIZE = 60
+DEFAULT_FONT_COLOR = glm.vec4(1.0, 1.0, 0.0, 1.0)
+
 
 def get_default_shader():
     """
@@ -62,10 +67,12 @@ def get_default_shader():
 
 def pygameize_color(color):
     """
-    Convert normalized color (0-1) to RGB (0-255).
+    Convert normalized color (0-1) to RGBA (0-255).
 
-    :param color: normalized color (0-1, 0-1, 0-1)
-    :return: RGB color (0-255, 0-255, 0-255)
+    Return None in case if no color is passed or transparency is set to 0
+
+    :param color: normalized color (0-1, 0-1, 0-1, 0-1)
+    :return: RGB color (0-255, 0-255, 0-255, 0-255)
     """
     return None if color is None or color[3] == 0.0 else [i * 255 for i in color]
 
@@ -85,10 +92,10 @@ class Text:
             self,
             text,
             shader,
-            position=glm.vec2(0.0, 0.0),
-            font_name='dejavusans',
-            font_size=60,
-            font_color=glm.vec4(1.0, 1.0, 0.0, 1.0),
+            position=DEFAULT_POSITION,
+            font_name=DEFAULT_FONT_NAME,
+            font_size=DEFAULT_FONT_SIZE,
+            font_color=DEFAULT_FONT_COLOR,
             bg_color=None
     ):
         _x, _y = position
