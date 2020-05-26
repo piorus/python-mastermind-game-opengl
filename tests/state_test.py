@@ -6,7 +6,7 @@ import pygame
 from src.game import state
 
 
-class TestState(unittest.TestCase):
+class StateTest(unittest.TestCase):
     def setUp(self) -> None:
         self.state = state.State()
 
