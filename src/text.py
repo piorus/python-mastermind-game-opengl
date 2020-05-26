@@ -115,7 +115,7 @@ class Text:
 
         self.is_prepared = False
 
-    def load(self):
+    def load(self, text):
         """
         Prepare text to render in OpenGL context.
 
@@ -129,7 +129,7 @@ class Text:
         """
         font = pygame.font.SysFont(self.font_name, self.font_size)
         surface = font.render(
-            self.text,
+            text,
             True,
             pygameize_color(self.font_color),
             pygameize_color(self.bg_color)
@@ -194,7 +194,7 @@ class Text:
         Draw text on the screen.
         """
         if not self.is_prepared:
-            self.load()
+            self.load(self.text)
 
         GL.glUseProgram(self.shader)
         GL.glActiveTexture(GL.GL_TEXTURE0)
@@ -211,4 +211,3 @@ class Text:
         """
         self.text = text
         self.is_prepared = False
-        self.load()
