@@ -3,7 +3,7 @@ import glm
 
 from src.game import opengl_objects
 from src.game import scene_children
-from src.game.state import State
+from src.game import state
 
 ANSWERS_START_POS = glm.vec3(0.0, 0.0, 0.0)
 ANSWERS_OFFSET = 2.5
@@ -14,7 +14,7 @@ class Scene:
     Scene class is a container for renderable 3d objects.
     """
 
-    def __init__(self, state: State):
+    def __init__(self, state: state.State):
         self.children = []
 
         sphere = opengl_objects.Sphere()

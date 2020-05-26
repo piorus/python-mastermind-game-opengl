@@ -12,12 +12,11 @@ import pygame
 
 from src import camera
 from src import mouse
-from src.events import Events, post
+from src import events
 from src.game import gui
 from src.game import logic
 from src.game import scene
 from src.game import state
-
 
 RESOLUTION = (1024, 768)
 WINDOW_CAPTION = 'Piotr Rusin - Projekt zaliczeniowy z Języków Symbolicznych (rok 2020)'
@@ -40,7 +39,7 @@ class App:
         self.clock = pygame.time.Clock()
         self.mouse = mouse.Mouse()
         self.camera = camera.Camera(CAMERA_FRONT)
-        self.events = Events()
+        self.events = events.Events()
         self.state = state.State()
         self.logic = logic.Logic(state=self.state)
         self.gui = gui.Gui()
@@ -69,7 +68,7 @@ class App:
             conditions={'key': pygame.K_RETURN}
         )
         # draw scene before gui to avoid transparency issues
-        self.events.on(Events.DRAW, self.scene.draw)
+        self.events.on(events.Events.DRAW, self.scene.draw)
         # toggle controls texts visibility
         self.events.on(
             pygame.KEYDOWN,
@@ -77,7 +76,7 @@ class App:
             conditions={'key': pygame.K_TAB}
         )
         # draw gui
-        self.events.on(Events.DRAW, lambda event: self.gui.draw())
+        self.events.on(events.Events.DRAW, lambda event: self.gui.draw())
         # bind keys 1-6 as selection changers
         keys_to_bind = [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6]
         for index, key in enumerate(keys_to_bind):
@@ -91,13 +90,13 @@ class App:
         # check if cheater after pressing O
         self.events.on(
             pygame.KEYDOWN,
-            lambda event: post(Events.CHEATER_CHECK, {'state': self.state}),
+            lambda event: events.post(events.Events.CHEATER_CHECK, {'state': self.state}),
             conditions={'key': pygame.K_o}
         )
         # show text with result of the check
-        self.events.on(Events.CHEATER_CHECK, lambda event: self.gui.on_cheater_check())
+        self.events.on(events.Events.CHEATER_CHECK, lambda event: self.gui.on_cheater_check())
         # disable input, wait for reset
-        self.events.on(Events.CHEATER_CHECK, lambda event: self.state.disable_input())
+        self.events.on(events.Events.CHEATER_CHECK, lambda event: self.state.disable_input())
 
         # reset game after pressing R
         self.events.on(
@@ -107,32 +106,32 @@ class App:
         )
         # change game results texts to the new combination after game reset
         self.events.on(
-            Events.AFTER_GAME_RESET,
+            events.Events.AFTER_GAME_RESET,
             lambda event: self.gui.reset_gui_texts(event.state)
         )
         # hide previous game result after resetting the game
-        self.events.on(Events.GAME_RESET, lambda event: self.gui.hide_result())
+        self.events.on(events.Events.GAME_RESET, lambda event: self.gui.hide_result())
         # show result message and disable input when the game is won
-        self.events.on(Events.GAME_WON, lambda event: self.gui.on_game_won())
+        self.events.on(events.Events.GAME_WON, lambda event: self.gui.on_game_won())
         # disable input, wait for reset
-        self.events.on(Events.GAME_WON, lambda event: self.state.disable_input())
+        self.events.on(events.Events.GAME_WON, lambda event: self.state.disable_input())
         # show result message and disable input when the game is lost
-        self.events.on(Events.GAME_OVER, lambda event: self.gui.on_game_over())
+        self.events.on(events.Events.GAME_OVER, lambda event: self.gui.on_game_over())
         # disable input, wait for reset
-        self.events.on(Events.GAME_OVER, lambda event: self.state.disable_input())
+        self.events.on(events.Events.GAME_OVER, lambda event: self.state.disable_input())
         # show validation error
         self.events.on(
-            Events.SHOW_VALIDATION_ERROR,
+            events.Events.SHOW_VALIDATION_ERROR,
             lambda event: self.gui.show_validation_error(event.validation_text)
         )
         # hide validation error
         self.events.on(
-            Events.HIDE_VALIDATION_ERROR,
+            events.Events.HIDE_VALIDATION_ERROR,
             lambda event: self.gui.hide_validation_error()
         )
         # set active rules for the current game (depends on the11 cheater state)
         self.events.on(
-            Events.AFTER_GAME_RESET,
+            events.Events.AFTER_GAME_RESET,
             lambda event: self.logic.change_active_rules(self.state)
         )
         # quit the application after clicking X in the window
@@ -161,22 +160,25 @@ class App:
             self.events.process(pygame.event.get())
 
             current_frame = pygame.time.get_ticks() / 1000.0
-            post(Events.DRAW, {
-                'dt': current_frame - last_frame,
-                'resolution': RESOLUTION,
-                'camera': self.camera,
-                'view': glm.lookAt(
-                    self.camera.pos,
-                    self.camera.pos + self.camera.front,
-                    self.camera.up
-                ),
-                'projection': glm.perspective(
-                    glm.radians(self.camera.zoom),
-                    aspect_ratio,
-                    0.1,
-                    100.0
-                )
-            })
+            events.post(
+                events.Events.DRAW,
+                {
+                    'dt': current_frame - last_frame,
+                    'resolution': RESOLUTION,
+                    'camera': self.camera,
+                    'view': glm.lookAt(
+                        self.camera.pos,
+                        self.camera.pos + self.camera.front,
+                        self.camera.up
+                    ),
+                    'projection': glm.perspective(
+                        glm.radians(self.camera.zoom),
+                        aspect_ratio,
+                        0.1,
+                        100.0
+                    )
+                }
+            )
             last_frame = current_frame
 
             pygame.display.flip()

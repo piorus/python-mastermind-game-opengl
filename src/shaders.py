@@ -10,6 +10,54 @@ import glm
 from OpenGL import GL
 
 
+def create_shader_program(vertex_shader, fragment_shader):
+    """
+    Create shader program from vertex and fragment shaders.
+
+    This function attach both vertex and fragment shaders
+    to the program and link them together.
+
+    :param vertex_shader: vertex shader ID
+    :param fragment_shader: fragment shader ID
+    :return: shader program ID
+    """
+    program = GL.glCreateProgram()
+    GL.glAttachShader(program, vertex_shader)
+    GL.glAttachShader(program, fragment_shader)
+    GL.glBindFragDataLocation(program, 0, "outColor")
+    GL.glLinkProgram(program)
+
+    return program
+
+
+def create_shader(shader_type, source):
+    """
+    Compile a shader.
+
+    :param shader_type: type of a shader to compile
+    :param source: shader source code
+    :return: shader ID
+    """
+    shader = GL.glCreateShader(shader_type)
+    GL.glShaderSource(shader, source)
+    GL.glCompileShader(shader)
+    if GL.glGetShaderiv(shader, GL.GL_COMPILE_STATUS) != GL.GL_TRUE:
+        raise RuntimeError(GL.glGetShaderInfoLog(shader))
+
+    return shader
+
+
+def read_from_file(path: str):
+    """
+    Load shader source from the file.
+
+    :param path: path to the shader source file
+    :return: source file content
+    """
+    with open(os.path.join(os.path.dirname(sys.argv[0]), path), 'r') as file:
+        return file.read()
+
+
 class Shader:
     """
     Shader class is handy helper to manage GLSL shaders more efficiently.
@@ -21,64 +69,16 @@ class Shader:
     """
 
     def __init__(self, vertex_path: str, fragment_path: str):
-        self.program = self.create_shader_program(
-            self.create_shader(
+        self.program = create_shader_program(
+            create_shader(
                 GL.GL_FRAGMENT_SHADER,
-                self.read_from_file(fragment_path)
+                read_from_file(fragment_path)
             ),
-            self.create_shader(
+            create_shader(
                 GL.GL_VERTEX_SHADER,
-                self.read_from_file(vertex_path)
+                read_from_file(vertex_path)
             )
         )
-
-    @staticmethod
-    def create_shader_program(vertex_shader, fragment_shader):
-        """
-        Create shader program from vertex and fragment shaders.
-
-        This function attach both vertex and fragment shaders
-        to the program and link them together.
-
-        :param vertex_shader: vertex shader ID
-        :param fragment_shader: fragment shader ID
-        :return: shader program ID
-        """
-        program = GL.glCreateProgram()
-        GL.glAttachShader(program, vertex_shader)
-        GL.glAttachShader(program, fragment_shader)
-        GL.glBindFragDataLocation(program, 0, "outColor")
-        GL.glLinkProgram(program)
-
-        return program
-
-    @staticmethod
-    def create_shader(shader_type, source):
-        """
-        Compile a shader.
-
-        :param shader_type: type of a shader to compile
-        :param source: shader source code
-        :return: shader ID
-        """
-        shader = GL.glCreateShader(shader_type)
-        GL.glShaderSource(shader, source)
-        GL.glCompileShader(shader)
-        if GL.glGetShaderiv(shader, GL.GL_COMPILE_STATUS) != GL.GL_TRUE:
-            raise RuntimeError(GL.glGetShaderInfoLog(shader))
-
-        return shader
-
-    @staticmethod
-    def read_from_file(path: str):
-        """
-        Load shader source from the file.
-
-        :param path: path to the shader source file
-        :return: source file content
-        """
-        with open(os.path.join(os.path.dirname(sys.argv[0]), path), 'r') as file:
-            return file.read()
 
     def use(self):
         """Use current program"""

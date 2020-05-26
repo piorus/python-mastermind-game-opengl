@@ -5,8 +5,8 @@ import math
 import glm
 import pygame
 
-from src.events import Events
-from src.mouse import Mouse
+from src import events
+from src import mouse
 
 YAW = -90.0
 PITCH = -90.0
@@ -96,7 +96,7 @@ class Camera:
         self.right = glm.normalize(glm.cross(self.front, self.world_up))
         self.up = glm.normalize(glm.cross(self.right, self.front))
 
-    def register_event_listeners(self, events: Events, mouse: Mouse):
+    def register_event_listeners(self, events: events.Events, mouse: mouse.Mouse):
         """
         Register camera listeners for keyboard input, mouse movement and scrolling.
 
@@ -124,12 +124,12 @@ class Camera:
         events.on(
             pygame.MOUSEBUTTONDOWN,
             lambda event: self.on_scroll_up(),
-            conditions={'button': Mouse.M_SCROLL_UP}
+            conditions={'button': mouse.M_SCROLL_UP}
         )
         events.on(
             pygame.MOUSEBUTTONDOWN,
             lambda event: self.on_scroll_down(),
-            conditions={'button': Mouse.M_SCROLL_DOWN}
+            conditions={'button': mouse.M_SCROLL_DOWN}
         )
         # handle mouse movement
         events.on(
@@ -191,7 +191,7 @@ class Camera:
         if self.moving_right:
             self.move_right()
 
-    def on_mouse_movement(self, mouse, constrain_pitch=True):
+    def on_mouse_movement(self, mouse: mouse.Mouse, constrain_pitch: bool = True):
         """
         Callback for the pygame.MOUSEMOTION event that handles camera movement.
 

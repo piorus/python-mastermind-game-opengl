@@ -3,7 +3,7 @@
 from random import randint
 from typing import List
 
-from src.events import Events, post
+from src import events
 
 
 class State:
@@ -37,7 +37,7 @@ class State:
 
         print('Combination:', self.combination)
         print('Rules:', 'Correct rules enabled.' if not self.cheater else 'CHEATER ENABLED')
-        post(Events.AFTER_GAME_RESET, {'state': self})
+        events.post(events.Events.AFTER_GAME_RESET, {'state': self})
 
     def reset(self):
         """
@@ -46,7 +46,7 @@ class State:
         :return: None
         """
         self.__init__()
-        post(Events.GAME_RESET, {})
+        events.post(events.Events.GAME_RESET, {})
 
     def get_active_index(self):
         """

@@ -4,11 +4,11 @@ It displays game controls.
 """
 import pygame
 
-from src.events import Events
-from src.game import gui_children
-from src.game.state import State
+from src import events
 from src import text
 from src import utils
+from src.game import gui_children
+from src.game import state
 
 
 class Gui:
@@ -94,7 +94,7 @@ class Gui:
         if self.cheater.visible:
             self.cheater.hide()
 
-    def reset_gui_texts(self, state: State):
+    def reset_gui_texts(self, game_state: state.State):
         """
         Reset gui texts to consider new state.
 
@@ -102,13 +102,13 @@ class Gui:
         and is required to run because combination and game mode
         is changed each time a reset is invoked.
 
-        :param state: State object
+        :param game_state: State object
         :return: None
         """
-        combination_str = utils.list_to_str(state.combination)
+        combination_str = utils.list_to_str(game_state.combination)
         self.combination_text_object.set_text('Poprawna kombinacja: %s' % combination_str)
         self.cheater.set_heading_text(
-            'OSZUST! Złapałeś/łaś mnie!' if state.cheater else 'Tere fere.'
+            'OSZUST! Złapałeś/łaś mnie!' if game_state.cheater else 'Tere fere.'
         )
 
     def on_cheater_check(self):
@@ -135,7 +135,7 @@ class Gui:
         """
         self.game_over.show()
 
-    def show_validation_error(self, validation_text):
+    def show_validation_error(self, validation_text: str):
         """
         Show validation error.
 
@@ -143,7 +143,7 @@ class Gui:
         :return:
         """
         # trigger HIDE_VALIDATION_ERROR after 2s to hide it from the screen
-        pygame.time.set_timer(Events.HIDE_VALIDATION_ERROR, 2000)
+        pygame.time.set_timer(events.Events.HIDE_VALIDATION_ERROR, 2000)
         self.validation_error.set_text(validation_text)
         self.validation_error.show()
 
@@ -154,5 +154,5 @@ class Gui:
         :return:
         """
         # disable timer
-        pygame.time.set_timer(Events.HIDE_VALIDATION_ERROR, 0)
+        pygame.time.set_timer(events.Events.HIDE_VALIDATION_ERROR, 0)
         self.validation_error.hide()

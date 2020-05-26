@@ -44,22 +44,22 @@ class Answer(SceneChild):
             answer_row: int,
             start_pos: glm.vec3,
             offset: float,
-            state: state.State,
+            game_state: state.State,
             sphere: opengl_objects.Sphere
     ):
         self.row = answer_row
         self.start_pos = start_pos
         self.offset = offset
-        self.state = state
+        self.state = game_state
         self.sphere = sphere
 
-    def draw(self, view: glm.mat4, projection: glm.mat4, camera: camera.Camera):
+    def draw(self, view: glm.mat4, projection: glm.mat4, cam: camera.Camera):
         """
         Draw answers on the screen using view and projection matrices.
 
         :param view: 4x4 view matrix
         :param projection: 4x4 projection matrix
-        :param camera: Camera object
+        :param cam: Camera object
         :return None
         """
         start_x, start_z = self.start_pos.xz
@@ -76,7 +76,7 @@ class Answer(SceneChild):
                 view,
                 projection,
                 self.get_color(self.row, col, is_active),
-                camera,
+                cam,
                 show_wireframe=is_active
             )
 
@@ -127,14 +127,14 @@ class Feedback(SceneChild):
             feedback_row: int,
             start_pos: glm.vec3,
             answers_offset: float,
-            state: state.State,
+            game_state: state.State,
             sphere: opengl_objects.Sphere
     ):
         self.row = feedback_row
         self.start_pos = start_pos
         self.answers_offset = answers_offset
         self.feedback_offset = answers_offset / 3
-        self.state = state
+        self.state = game_state
         self.sphere = sphere
 
     def draw(self, view: glm.mat4, projection: glm.mat4, camera: camera.Camera):

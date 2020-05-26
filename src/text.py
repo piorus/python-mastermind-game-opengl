@@ -10,7 +10,7 @@ import glm
 from OpenGL import GL
 import pygame
 
-from src.shaders import Shader
+from src import shaders
 from src import utils
 
 DEFAULT_VERTEX_SHADER = '''
@@ -51,9 +51,9 @@ def get_default_shader():
 
     :return shader program ID
     """
-    vertex = Shader.create_shader(GL.GL_VERTEX_SHADER, DEFAULT_VERTEX_SHADER)
-    fragment = Shader.create_shader(GL.GL_FRAGMENT_SHADER, DEFAULT_FRAGMENT_SHADER)
-    shader_program = Shader.create_shader_program(vertex, fragment)
+    vertex = shaders.create_shader(GL.GL_VERTEX_SHADER, DEFAULT_VERTEX_SHADER)
+    fragment = shaders.create_shader(GL.GL_FRAGMENT_SHADER, DEFAULT_FRAGMENT_SHADER)
+    shader_program = shaders.create_shader_program(vertex, fragment)
     GL.glUseProgram(shader_program)
     GL.glUniform1i(GL.glGetUniformLocation(shader_program, 'texture1'), 0)
 

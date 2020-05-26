@@ -1,16 +1,17 @@
 """logic module"""
 from random import randint
 
-from src.events import Events, post
-from src.game.state import State
+from src import events
 from src import utils
+from src.game import state
 
 
 class GameRules:
     """
     GameRules class is handling the game logic in a correct way.
     """
-    def __init__(self, state):
+
+    def __init__(self, state: state.State):
         self.state = state
 
     def check_row(self):
@@ -32,8 +33,8 @@ class GameRules:
 
         if 0 in answer:
             print('Błąd. Nie wybrano wszystkich wartości z wiersza.')
-            post(
-                Events.SHOW_VALIDATION_ERROR,
+            events.post(
+                events.Events.SHOW_VALIDATION_ERROR,
                 {'validation_text': 'Błąd. Nie wybrano wszystkich wartości z wiersza.'}
             )
             return
@@ -43,7 +44,7 @@ class GameRules:
                 'WYGRAŁEŚ. Gratulacje. Poprawna kombinacja: %s'
                 % utils.list_to_str(self.state.combination)
             )
-            post(Events.GAME_WON, {})
+            events.post(events.Events.GAME_WON, {})
             return
 
         indices_to_check = []
@@ -62,8 +63,8 @@ class GameRules:
                 self.state.append_feedback_digit(2)
 
         if current_row == 0:
-            print('PRZEGRAŁEŚ. Poprawna kombinacja: %s' % list_to_str(self.state.combination))
-            post(Events.GAME_OVER, {})
+            print('PRZEGRAŁEŚ. Poprawna kombinacja: %s' % utils.list_to_str(self.state.combination))
+            events.post(events.Events.GAME_OVER, {})
             return
 
         self.state.current_row -= 1
@@ -111,13 +112,13 @@ class Logic:
     Logic class is used to handle game logic.
     """
 
-    def __init__(self, state: State):
+    def __init__(self, state: state.State):
         self.state = state
         self.rules = GameRules(state)
         self.cheater_rules = CheaterGameRules(state)
         self.active_rules = None
 
-    def change_active_rules(self, state: State):
+    def change_active_rules(self, state: state.State):
         """
         Change active rules after resetting the game.
 

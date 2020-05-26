@@ -4,7 +4,7 @@ from ctypes import sizeof, c_void_p
 import glm
 from OpenGL import GL
 
-from src.camera import Camera
+from src import camera
 from src import shaders
 from src import vertex_data
 
@@ -135,7 +135,7 @@ class Sphere(OpenGLObject):
             view: glm.mat4,
             projection: glm.mat4,
             color: glm.vec3,
-            camera: Camera,
+            camera: camera.Camera,
             scale: glm.vec3 = glm.vec3(1.0, 1.0, 1.0),
             show_wireframe: bool = False
     ):

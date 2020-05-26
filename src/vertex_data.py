@@ -7,7 +7,7 @@ source: http://www.songho.ca/opengl/gl_sphere.html
 from math import pi, sin, cos
 
 import glm
-import OpenGL.GLU as GLU
+from OpenGL import GLU
 
 from src import utils
 
