@@ -16,9 +16,7 @@ class EventListener:
         self.name = name
         self.event_type = event_type
         self.callback = callback
-        if conditions:
-            self.conditions = conditions
-
+        self.conditions = conditions if conditions else []
         self.data = data
 
 
