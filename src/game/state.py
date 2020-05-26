@@ -5,6 +5,9 @@ from typing import List
 
 from src import events
 
+COMBINATION_LENGTH = 4
+NUMBER_OF_TRIES = 12
+
 
 class State:
     """
@@ -27,10 +30,10 @@ class State:
     current_row: int
 
     def __init__(self):
-        self.combination = [randint(1, 6) for i in range(4)]
-        self.answers = [[0 for j in range(4)] for i in range(12)]
-        self.feedback = [[] for i in range(12)]
-        self.active_indices = [1 if i == 0 else 0 for i in range(4)]
+        self.combination = [randint(1, 6) for i in range(COMBINATION_LENGTH)]
+        self.answers = [[0 for j in range(COMBINATION_LENGTH)] for i in range(NUMBER_OF_TRIES)]
+        self.feedback = [[] for i in range(NUMBER_OF_TRIES)]
+        self.active_indices = [1 if i == 0 else 0 for i in range(COMBINATION_LENGTH)]
         self.current_row = len(self.answers) - 1
         self.input_enabled = True
         self.cheater = bool(randint(0, 1))
