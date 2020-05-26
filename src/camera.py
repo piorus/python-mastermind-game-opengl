@@ -8,16 +8,19 @@ import pygame
 from src import events
 from src import mouse
 
-YAW = -90.0
-PITCH = -90.0
-SPEED = 25.0
-SENSIVITY = 0.3
-ZOOM = 45.0
+DEFAULT_POSITION = glm.vec3(0.0, 0.0, 0.0)
+DEFAULT_UP = glm.vec3(0.0, 1.0, 0.0)
+DEFAULT_YAW = -90.0
+DEFAULT_PITCH = -90.0
+DEFAULT_SPEED = 25.0
+DEFAULT_SENSIVITY = 0.3
+DEFAULT_ZOOM = 45.0
+MOVEMENT_DIRECTIONS = FORWARD, BACKWARD, LEFT, RIGHT = 2, 4, 8, 16
 MOVEMENT_BINDINGS = {
-    'forward': pygame.K_w,
-    'backward': pygame.K_s,
-    'left': pygame.K_a,
-    'right': pygame.K_d
+    FORWARD: pygame.K_w,
+    BACKWARD: pygame.K_s,
+    LEFT: pygame.K_a,
+    RIGHT: pygame.K_d
 }
 
 
@@ -32,28 +35,25 @@ class Camera:
 
     def __init__(
             self,
-            pos=glm.vec3(0.0, 0.0, 0.0),
-            up=glm.vec3(0.0, 1.0, 0.0),
-            yaw=YAW,
-            pitch=PITCH
+            position=DEFAULT_POSITION,
+            up=DEFAULT_UP,
+            yaw=DEFAULT_YAW,
+            pitch=DEFAULT_PITCH
     ):
         self.front = glm.vec3(0.0, 0.0, -1.0)
         self.right = None
         self.up = None  # pylint: disable=invalid-name
 
-        self.movement_speed = SPEED
-        self.mouse_sensivity = SENSIVITY
-        self.zoom = ZOOM
+        self.movement_speed = DEFAULT_SPEED
+        self.mouse_sensivity = DEFAULT_SENSIVITY
+        self.zoom = DEFAULT_ZOOM
 
-        self.pos = pos
+        self.pos = position
         self.world_up = up
         self.yaw = yaw
         self.pitch = pitch
 
-        self.moving_forward = False
-        self.moving_backward = False
-        self.moving_left = False
-        self.moving_right = False
+        self.movement_direction = 0
 
         self.update_camera_vectors()
 
@@ -64,7 +64,7 @@ class Camera:
         :param direction: direction that camera should move to
         :return: None
         """
-        setattr(self, 'moving_%s' % direction, True)
+        self.movement_direction |= direction
 
     def disable_moving(self, direction):
         """
@@ -73,7 +73,7 @@ class Camera:
         :param direction: direction that camera should stop moving to
         :return: None
         """
-        setattr(self, 'moving_%s' % direction, False)
+        self.movement_direction ^= direction
 
     def update_camera_vectors(self):
         """
@@ -106,7 +106,7 @@ class Camera:
         """
 
         # movement bindings
-        for direction in ['forward', 'backward', 'left', 'right']:
+        for direction in MOVEMENT_DIRECTIONS:
             events.on(
                 pygame.KEYDOWN,
                 lambda event, data: self.enable_moving(data['direction']),
@@ -180,15 +180,15 @@ class Camera:
         :return: None
         """
 
-        self.movement_speed = SPEED * event.dt
+        self.movement_speed = DEFAULT_SPEED * event.dt
 
-        if self.moving_forward:
+        if self.movement_direction & FORWARD:
             self.move_forward()
-        if self.moving_backward:
+        if self.movement_direction & BACKWARD:
             self.move_backward()
-        if self.moving_left:
+        if self.movement_direction & LEFT:
             self.move_left()
-        if self.moving_right:
+        if self.movement_direction & RIGHT:
             self.move_right()
 
     def on_mouse_movement(self, mouse: mouse.Mouse, constrain_pitch: bool = True):

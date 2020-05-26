@@ -12,6 +12,8 @@ def main():
     It also set OpenGL constants used in the game.
     """
     pygame.init()
+    pygame.display.set_caption(app.WINDOW_CAPTION)
+    pygame.display.set_mode(app.RESOLUTION, pygame.DOUBLEBUF | pygame.OPENGL)
 
     application = app.App()
 

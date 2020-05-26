@@ -34,8 +34,6 @@ class App:
     """
 
     def __init__(self):
-        pygame.display.set_caption(WINDOW_CAPTION)
-        self.window = pygame.display.set_mode(RESOLUTION, pygame.DOUBLEBUF | pygame.OPENGL)
         self.clock = pygame.time.Clock()
         self.mouse = mouse.Mouse()
         self.camera = camera.Camera(CAMERA_FRONT)
