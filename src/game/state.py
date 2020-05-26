@@ -37,7 +37,7 @@ class State:
 
         print('Combination:', self.combination)
         print('Rules:', 'Correct rules enabled.' if not self.cheater else 'CHEATER ENABLED')
-        events.post(events.Events.AFTER_GAME_RESET, {'state': self})
+        events.post(events.AFTER_GAME_RESET, {'state': self})
 
     def reset(self):
         """
@@ -46,7 +46,7 @@ class State:
         :return: None
         """
         self.__init__()
-        events.post(events.Events.GAME_RESET, {})
+        events.post(events.GAME_RESET, {})
 
     def get_active_index(self):
         """

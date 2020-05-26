@@ -96,24 +96,24 @@ class Camera:
         self.right = glm.normalize(glm.cross(self.front, self.world_up))
         self.up = glm.normalize(glm.cross(self.right, self.front))
 
-    def register_event_listeners(self, events: events.Events, mouse: mouse.Mouse):
+    def register_event_listeners(self, events_object: events.Events, mouse_object: mouse.Mouse):
         """
         Register camera listeners for keyboard input, mouse movement and scrolling.
 
-        :param events: Events object
-        :param mouse: Mouse object
+        :param events_object: Events object
+        :param mouse_object: Mouse object
         :return: None
         """
 
         # movement bindings
         for direction in MOVEMENT_DIRECTIONS:
-            events.on(
+            events_object.on(
                 pygame.KEYDOWN,
                 lambda event, data: self.enable_moving(data['direction']),
                 conditions={'key': MOVEMENT_BINDINGS[direction]},
                 data={'direction': direction}
             )
-            events.on(
+            events_object.on(
                 pygame.KEYUP,
                 lambda event, data: self.disable_moving(data['direction']),
                 conditions={'key': MOVEMENT_BINDINGS[direction]},
@@ -121,24 +121,24 @@ class Camera:
             )
 
         # mouse zooming
-        events.on(
+        events_object.on(
             pygame.MOUSEBUTTONDOWN,
             lambda event: self.on_scroll_up(),
-            conditions={'button': mouse.M_SCROLL_UP}
+            conditions={'button': mouse_object.M_SCROLL_UP}
         )
-        events.on(
+        events_object.on(
             pygame.MOUSEBUTTONDOWN,
             lambda event: self.on_scroll_down(),
-            conditions={'button': mouse.M_SCROLL_DOWN}
+            conditions={'button': mouse_object.M_SCROLL_DOWN}
         )
         # handle mouse movement
-        events.on(
+        events_object.on(
             pygame.MOUSEMOTION,
             lambda event, data: self.on_mouse_movement(data['mouse']),
-            data={'mouse': mouse}
+            data={'mouse': mouse_object}
         )
 
-        events.on(events.DRAW, self.on_draw)
+        events_object.on(events.DRAW, self.on_draw)
 
     def move_forward(self):
         """

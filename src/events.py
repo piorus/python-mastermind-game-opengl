@@ -3,6 +3,28 @@ import collections
 
 import pygame
 
+"""
+List of custom events defined below:
+- DRAW - executed in the each iteration of main game loop
+- GAME_OVER - executed after the game is over
+- GAME_WON - executed after the game is won
+- GAME_RESET - executed after pressing R
+- AFTER_GAME_RESET - executed after resetting the game
+- CHEATER_CHECK - executed after pressing O
+- SHOW_VALIDATION_ERROR - executed when validation error occurs
+- HIDE_VALIDATION_ERROR - executed after 2s to hide validation error
+"""
+(
+    DRAW,
+    GAME_OVER,
+    GAME_WON,
+    GAME_RESET,
+    AFTER_GAME_RESET,
+    CHEATER_CHECK,
+    SHOW_VALIDATION_ERROR,
+    HIDE_VALIDATION_ERROR
+) = range(pygame.USEREVENT, pygame.USEREVENT + 8)
+
 
 # pylint: disable=too-few-public-methods
 class EventListener:
@@ -99,25 +121,7 @@ class Subject:
 class Events:
     """
     Events class that is used to handle all of the pygame events.
-
-    List of custom events defined below:
-    - Events.DRAW - executed in the each iteration of main game loop
-    - Events.GAME_OVER - executed after the game is over
-    - Events.GAME_WON - executed after the game is won
-    - Events.GAME_RESET - executed after pressing R
-    - Events.AFTER_GAME_RESET - executed after resetting the game
-    - Events.CHEATER_CHECK - executed after pressing O
-    - Events.SHOW_VALIDATION_ERROR - executed when validation error occurs
-    - Events.HIDE_VALIDATION_ERROR - executed after 2s to hide validation error
     """
-    DRAW = pygame.USEREVENT
-    GAME_OVER = pygame.USEREVENT + 1
-    GAME_WON = pygame.USEREVENT + 2
-    GAME_RESET = pygame.USEREVENT + 3
-    AFTER_GAME_RESET = pygame.USEREVENT + 4
-    CHEATER_CHECK = pygame.USEREVENT + 5
-    SHOW_VALIDATION_ERROR = pygame.USEREVENT + 6
-    HIDE_VALIDATION_ERROR = pygame.USEREVENT + 7
 
     def __init__(self):
         self.subject = Subject()
