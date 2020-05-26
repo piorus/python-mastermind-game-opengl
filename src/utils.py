@@ -58,17 +58,18 @@ def surface_to_texture(
     GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, min_filter)
     GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, mag_filter)
     # textures - load data
-    GL.glTexImage2D(
-        GL.GL_TEXTURE_2D,  # target
-        0,  # level
-        GL.GL_RGBA,  # internalformat
-        surface_width,
-        surface_height,
-        0,  # border
-        GL.GL_RGBA,  # format
-        GL.GL_UNSIGNED_BYTE,  # type
-        surface_data  # pixels
-    )
+    kwargs = {
+        'target': GL.GL_TEXTURE_2D,
+        'level': 0,
+        'internalformat': GL.GL_RGBA,
+        'width': surface_width,
+        'height': surface_height,
+        'border': 0,
+        'format': GL.GL_RGBA,
+        'type': GL.GL_UNSIGNED_BYTE,
+        'pixels': surface_data
+    }
+    GL.glTexImage2D(*kwargs.values())
     GL.glGenerateMipmap(GL.GL_TEXTURE_2D)
 
     return texture
