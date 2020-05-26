@@ -62,7 +62,6 @@ class Camera:
         Enable moving in given direction.
 
         :param direction: direction that camera should move to
-        :return: None
         """
         self.movement_direction |= direction
 
@@ -71,15 +70,12 @@ class Camera:
         Disable moving in the given direction.
 
         :param direction: direction that camera should stop moving to
-        :return: None
         """
         self.movement_direction ^= direction
 
     def update_camera_vectors(self):
         """
         Recalculate camera vectors.
-
-        :return: None
         """
 
         # calculate the new front vector
@@ -102,7 +98,6 @@ class Camera:
 
         :param events_object: Events object
         :param mouse_object: Mouse object
-        :return: None
         """
 
         # movement bindings
@@ -143,32 +138,24 @@ class Camera:
     def move_forward(self):
         """
         Move camera forward.
-
-        :return: None
         """
         self.pos += self.movement_speed * self.front
 
     def move_backward(self):
         """
         Move camera backward.
-
-        :return: None
         """
         self.pos -= self.movement_speed * self.front
 
     def move_left(self):
         """
         Move camera to the left.
-
-        :return: None
         """
         self.pos -= self.movement_speed * glm.normalize(glm.cross(self.front, self.up))
 
     def move_right(self):
         """
         Move camera to the right.
-
-        :return: None
         """
         self.pos += self.movement_speed * glm.normalize(glm.cross(self.front, self.up))
 
@@ -177,7 +164,6 @@ class Camera:
         Callback for the Events.DRAW event that handles camera movement.
 
         :param event: Events.DRAW event
-        :return: None
         """
 
         self.movement_speed = DEFAULT_SPEED * event.dt
@@ -197,7 +183,6 @@ class Camera:
 
         :param mouse: input.Mouse
         :param constrain_pitch: flag that determine if pitch should be constrained
-        :return: None
         """
         self.yaw += (mouse.offset_x * self.mouse_sensivity)
         self.pitch += (mouse.offset_y * self.mouse_sensivity)
@@ -213,8 +198,6 @@ class Camera:
     def on_scroll_up(self):
         """
         Callback for the pygame.MOUSEBUTTONDOWN that handles camera zooming up.
-
-        :return: None
         """
         if self.zoom >= 45.0:
             self.zoom = 45.0
@@ -224,8 +207,6 @@ class Camera:
     def on_scroll_down(self):
         """
         Callback for the pygame.MOUSEBUTTONDOWN that handles camera zooming down.
-
-        :return: None
         """
         if self.zoom <= 1.0:
             self.zoom = 1.0

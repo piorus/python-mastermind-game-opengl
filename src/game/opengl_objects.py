@@ -135,7 +135,7 @@ class Sphere(OpenGLObject):
             view: glm.mat4,
             projection: glm.mat4,
             color: glm.vec3,
-            camera: camera.Camera,
+            camera_object: camera.Camera,
             scale: glm.vec3 = glm.vec3(1.0, 1.0, 1.0),
             show_wireframe: bool = False
     ):
@@ -146,10 +146,9 @@ class Sphere(OpenGLObject):
         :param view: 4x4 view matrix
         :param projection: 4x4 projection matrix
         :param color: glm.vec3 representing color of the sphere
-        :param camera: Camera object
+        :param camera_object: Camera object
         :param scale: glm.vec3 representing scale of the sphere
         :param show_wireframe: flag that determine if wireframe should be displayed
-        :return:
         """
         self.shader.use()
 
@@ -157,7 +156,7 @@ class Sphere(OpenGLObject):
         ambient_color = diffuse_color * glm.vec3(0.2)
 
         self.shader.set_vec3('lightPos', glm.vec3(-5.0, 5.0, 15.0))
-        self.shader.set_vec3('viewPos', camera.pos)
+        self.shader.set_vec3('viewPos', camera_object.pos)
 
         # light properties
         self.shader.set_vec3("light.ambient", ambient_color)

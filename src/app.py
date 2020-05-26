@@ -41,13 +41,11 @@ class App:
         self.state = state.State()
         self.logic = logic.Logic(state=self.state)
         self.gui = gui.Gui()
-        self.scene = scene.Scene(state=self.state)
+        self.scene = scene.Scene(state_object=self.state)
 
     def register_events(self):
         """
         Register event listeners used in the application.
-
-        :return: None
         """
         # handle mouse movement
         self.events.on(pygame.MOUSEMOTION, self.mouse.on_mouse_move)
@@ -144,8 +142,6 @@ class App:
     def run(self):
         """
         Main game loop.
-
-        :return: None
         """
 
         last_frame = 0
@@ -186,8 +182,6 @@ class App:
     def quit():
         """
         Quit the application.
-
-        :return: None
         """
         pygame.quit()
         sys.exit()

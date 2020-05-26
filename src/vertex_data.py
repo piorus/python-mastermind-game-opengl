@@ -37,6 +37,7 @@ class SphereVertexData:
         Generate sphere vertices and indices for predefined stacks and sectors.
 
         Vertices and indices are then casted to the type supported by OpenGL.
+        :return self
         """
         stack_step = pi / SPHERE_STACK_COUNT
         sector_step = 2 * pi / SPHERE_SECTOR_COUNT

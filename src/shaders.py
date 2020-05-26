@@ -102,7 +102,6 @@ class Shader:
 
         :param name: uniform variable name
         :param value: bool value to set
-        :return None
         """
         GL.glUniform1i(self.get_location(name), glm.value_ptr(value))
 
@@ -112,7 +111,6 @@ class Shader:
 
         :param name: uniform variable name
         :param value: int value to set
-        :return None
         """
         GL.glUniform1i(self.get_location(name), glm.value_ptr(value))
 
@@ -122,7 +120,6 @@ class Shader:
 
         :param name: uniform variable name
         :param value: float value to set
-        :return None
         """
         GL.glUniform1f(self.get_location(name), GL.GLfloat(value))
 
@@ -132,7 +129,6 @@ class Shader:
 
         :param name: uniform variable name
         :param value: glm.vec2 value to set
-        :return None
         """
         GL.glUniform2fv(self.get_location(name), 1, glm.value_ptr(value))
 
@@ -142,7 +138,6 @@ class Shader:
 
         :param name: uniform variable name
         :param value: glm.vec3 value to set
-        :return None
         """
         GL.glUniform3fv(self.get_location(name), 1, glm.value_ptr(value))
 
@@ -152,7 +147,6 @@ class Shader:
 
         :param name: uniform variable name
         :param value: glm.vec4 value to set
-        :return None
         """
         GL.glUniform4fv(self.get_location(name), 1, glm.value_ptr(value))
 
@@ -162,7 +156,6 @@ class Shader:
 
         :param name: uniform variable name
         :param value: glm.mat2 value to set
-        :return None
         """
         GL.glUniformMatrix2fv(self.get_location(name), 1, GL.GL_FALSE, glm.value_ptr(value))
 
@@ -172,7 +165,6 @@ class Shader:
 
         :param name: uniform variable name
         :param value: glm.mat3 value to set
-        :return None
         """
         GL.glUniformMatrix3fv(self.get_location(name), 1, GL.GL_FALSE, glm.value_ptr(value))
 
@@ -182,6 +174,5 @@ class Shader:
 
         :param name: uniform variable name
         :param value: glm.mat4 value to set
-        :return None
         """
         GL.glUniformMatrix4fv(self.get_location(name), 1, GL.GL_FALSE, glm.value_ptr(value))

@@ -23,7 +23,7 @@ SELECTION_COLORS = [
 class SceneChild:
     """Base class for scene child."""
 
-    def draw(self, view: glm.mat4, projection: glm.mat4, camera: camera.Camera):
+    def draw(self, view: glm.mat4, projection: glm.mat4, camera_object: camera.Camera):
         """Draw child on the screen using view and projection matrices."""
 
 
@@ -53,14 +53,13 @@ class Answer(SceneChild):
         self.state = game_state
         self.sphere = sphere
 
-    def draw(self, view: glm.mat4, projection: glm.mat4, cam: camera.Camera):
+    def draw(self, view: glm.mat4, projection: glm.mat4, camera_object: camera.Camera):
         """
         Draw answers on the screen using view and projection matrices.
 
         :param view: 4x4 view matrix
         :param projection: 4x4 projection matrix
-        :param cam: Camera object
-        :return None
+        :param camera_object: Camera object
         """
         start_x, start_z = self.start_pos.xz
 
@@ -76,7 +75,7 @@ class Answer(SceneChild):
                 view,
                 projection,
                 self.get_color(self.row, col, is_active),
-                cam,
+                camera_object,
                 show_wireframe=is_active
             )
 
@@ -137,13 +136,12 @@ class Feedback(SceneChild):
         self.state = game_state
         self.sphere = sphere
 
-    def draw(self, view: glm.mat4, projection: glm.mat4, camera: camera.Camera):
+    def draw(self, view: glm.mat4, projection: glm.mat4, camera_object: camera.Camera):
         """
         Draw feedback spheres for the given row on the screen.
 
         :param view: 4x4 view matrix
         :param projection: 4x4 projection matrix
-        :return None
         """
         for col, feedback_pos in enumerate(self.get_points()):
             if not self.is_visible(col):
@@ -157,7 +155,7 @@ class Feedback(SceneChild):
                 view,
                 projection,
                 self.get_color(self.row, col),
-                camera,
+                camera_object,
                 scale=glm.vec3(0.25, 0.25, 0.25)
             )
 

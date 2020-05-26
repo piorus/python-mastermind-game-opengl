@@ -118,20 +118,17 @@ class Logic:
         self.cheater_rules = CheaterGameRules(state)
         self.active_rules = None
 
-    def change_active_rules(self, state: state.State):
+    def change_active_rules(self, state_object: state.State):
         """
         Change active rules after resetting the game.
 
-        :param state: game state
-        :return: None
+        :param state_object: game state
         """
-        self.active_rules = self.cheater_rules if state.cheater else self.rules
+        self.active_rules = self.cheater_rules if state_object.cheater else self.rules
 
     def check_row(self):
         """
         Check row for the correct answer.
-
-        :return: None
         """
         self.active_rules.check_row()
 
@@ -140,14 +137,11 @@ class Logic:
         Set answer digit for the currently active cell.
 
         :param digit: digit to set
-        :return: None
         """
         self.active_rules.set_answer_digit(digit)
 
     def change_active_index(self):
         """
         Change active index of the current row.
-
-        :return: None
         """
         self.active_rules.change_active_index()

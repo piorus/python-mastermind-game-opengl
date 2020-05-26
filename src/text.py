@@ -120,8 +120,6 @@ class Text:
              to the texture
           4. calculate text position
           5. send updated vertices / indices data to the GPU
-
-        :return None
         """
         font = pygame.font.SysFont(self.font_name, self.font_size)
         surface = font.render(
@@ -188,8 +186,6 @@ class Text:
     def draw(self):
         """
         Draw text on the screen.
-
-        :return: None
         """
         if not self.is_prepared:
             return
@@ -206,7 +202,6 @@ class Text:
         Set text and copy surface data to the OpenGL texture.
 
         :param text: new text value
-        :return: None
         """
         self.text = text
         self.is_prepared = False

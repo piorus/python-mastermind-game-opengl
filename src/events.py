@@ -46,10 +46,6 @@ class EventListener:
 def check_conditions(event, event_listener: EventListener):
     """
     Check if all conditions are met for the event listener.
-
-    :param event:
-    :param event_listener:
-    :return:
     """
     for k in event_listener.conditions:
         if not hasattr(event, k):
@@ -69,7 +65,6 @@ def post(event_type, args):
 
     :param event_type: type of the event
     :param args: arguments
-    :return: None
     """
     pygame.event.post(pygame.event.Event(event_type, args))
 
@@ -104,7 +99,6 @@ class Subject:
         that is also passed when invoking a callback.
 
         :param event: event to check
-        :return: None
         """
         if event.type in self.event_listeners:
             for event_listener in self.event_listeners[event.type]:
@@ -131,7 +125,6 @@ class Events:
         Process pygame events.
 
         :param events:
-        :return: None
         """
         for event in events:
             self.subject.invoke_event_callbacks(event)
@@ -143,13 +136,6 @@ class Events:
 
         If event is posted by the pygame, there is a conditions check after
         which a callback is invoked with received event and data (if any) as an arguments.
-
-        :param event_type:
-        :param callback:
-        :param name:
-        :param conditions:
-        :param data:
-        :return: None
         """
         self.subject.register_event_listener(
             EventListener(event_type, callback, name, conditions, data)

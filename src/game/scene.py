@@ -14,7 +14,7 @@ class Scene:
     Scene class is a container for renderable 3d objects.
     """
 
-    def __init__(self, state: state.State):
+    def __init__(self, state_object: state.State):
         self.children = []
 
         sphere = opengl_objects.Sphere()
@@ -25,7 +25,7 @@ class Scene:
                     row,
                     ANSWERS_START_POS,
                     ANSWERS_OFFSET,
-                    state,
+                    state_object,
                     sphere
                 )
             )
@@ -34,7 +34,7 @@ class Scene:
                     row,
                     ANSWERS_START_POS,
                     ANSWERS_OFFSET,
-                    state,
+                    state_object,
                     sphere
                 )
             )
@@ -42,9 +42,6 @@ class Scene:
     def draw(self, event):
         """
         Draw scene children on the screen.
-
-        :param event: Events.DRAW event
-        :return None
         """
         for child in self.children:
             child.draw(event.view, event.projection, event.camera)
@@ -54,6 +51,5 @@ class Scene:
         Add scene child.
 
         :param child: any object that have draw(self, view, projection) method
-        :return None
         """
         self.children.append(child)

@@ -42,8 +42,6 @@ class State:
     def reset(self):
         """
         Game reset.
-
-        :return: None
         """
         self.__init__()
         events.post(events.GAME_RESET, {})
@@ -62,8 +60,6 @@ class State:
 
         In case if no next element is available,
         proceed to the first element.
-
-        :return: None
         """
         index = self.get_active_index()
         next_index = 0
@@ -99,7 +95,6 @@ class State:
 
         :param digit: digit to set, this later used to determine color
         :param row: feedback row
-        :return: None
         """
         self.feedback[row if row else self.current_row].append(digit)
 
@@ -119,18 +114,12 @@ class State:
         :param row: answer row
         :param col: answer col
         :return digit of the answer at given row and col
-        :return: None
         """
         return self.get_answer(row)[col]
 
     def set_answer_digit(self, digit: int, row: int = None, col: int = None):
         """
         Set answer digit for the given row and col.
-
-        :param digit: answer digit
-        :param row: answer row
-        :param col: answer col
-        :return: None
         """
         row = row if row else self.current_row
         col = col if col else self.get_active_index()
@@ -139,7 +128,5 @@ class State:
     def disable_input(self):
         """
         Disable input and wait for the reset.
-
-        :return: None
         """
         self.input_enabled = False

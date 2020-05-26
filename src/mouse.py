@@ -25,7 +25,6 @@ class Mouse:
         Callback for the pygame.MOUSEMOTION event that handles mouse movement.
 
         :param event: pygame Event
-        :return: None
         """
         if self.first_time:
             self.last_x, self.last_y = pygame.mouse.get_pos()
