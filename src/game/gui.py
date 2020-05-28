@@ -5,16 +5,12 @@ It displays game controls.
 import glm
 import pygame
 
+from src import constants
 from src import events
 from src import text
 from src import utils
 from src.game import gui_children
 from src.game import state
-
-COLOR_RED = glm.vec4(1.0, 0.0, 0.0, 1.0)
-COLOR_GREEN = glm.vec4(0.0, 1.0, 0.0, 1.0)
-COLOR_LIGHT_BLUE = glm.vec4(0.0, 1.0, 1.0, 1.0)
-COLOR_WHITE = glm.vec4(1.0, 1.0, 1.0, 1.0)
 
 DEFAULT_COMBINATION_TEXT_POSITION = glm.vec2(0.0, 0.11)
 DEFAULT_COMBINATION_TEXT_FONT_SIZE = 35
@@ -38,28 +34,28 @@ class Gui:
             default_text_shader,
             position=DEFAULT_COMBINATION_TEXT_POSITION,
             font_size=DEFAULT_COMBINATION_TEXT_FONT_SIZE,
-            font_color=COLOR_WHITE
+            font_color=constants.COLOR_WHITE
         )
 
         self.game_over = gui_children.GameResult(
             shader=default_text_shader,
             combination_text_object=self.combination_text_object,
             heading_text='PRZEGRAŁEŚ',
-            heading_color=COLOR_RED,
+            heading_color=constants.COLOR_RED,
         )
 
         self.game_won = gui_children.GameResult(
             shader=default_text_shader,
             combination_text_object=self.combination_text_object,
             heading_text='WYGRAŁEŚ! GRATULACJE.',
-            heading_color=COLOR_GREEN,
+            heading_color=constants.COLOR_GREEN,
         )
 
         self.cheater = gui_children.GameResult(
             shader=default_text_shader,
             combination_text_object=self.combination_text_object,
             heading_text='Tere fere.',
-            heading_color=COLOR_LIGHT_BLUE,
+            heading_color=constants.COLOR_LIGHT_BLUE,
         )
 
         self.validation_error = gui_children.ValidationError(shader=default_text_shader)
@@ -114,10 +110,12 @@ class Gui:
         :param state_object: State object
         :return: None
         """
+        print(state_object.active_rules_class)
         combination_str = utils.list_to_str(state_object.combination)
         self.combination_text_object.set_text('Poprawna kombinacja: %s' % combination_str)
         self.cheater.set_heading_text(
-            'OSZUST! Złapałeś/łaś mnie!' if state_object.cheater else 'Tere fere.'
+            'OSZUST! Złapałeś/łaś mnie!'
+            if state_object.active_rules_class == 'asdf' else 'Tere fere.'
         )
 
     def on_cheater_check(self):
@@ -128,20 +126,26 @@ class Gui:
         """
         self.cheater.show()
 
-    def on_game_won(self):
+    def on_game_won(self, combination: list):
         """
         Show game won result.
 
         :return: None
         """
+        self.combination_text_object.set_text(
+            'Poprawna kombinacja: %s' % utils.list_to_str(combination)
+        )
         self.game_won.show()
 
-    def on_game_over(self):
+    def on_game_over(self, combination: list):
         """
         Show game over result.
 
         :return: None
         """
+        self.combination_text_object.set_text(
+            'Poprawna kombinacja: %s' % utils.list_to_str(combination)
+        )
         self.game_over.show()
 
     def show_validation_error(self, validation_text: str):

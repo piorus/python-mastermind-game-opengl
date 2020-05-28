@@ -1,8 +1,3 @@
-"""events module"""
-import collections
-
-import pygame
-
 """
 List of custom events defined below:
 - DRAW - executed in the each iteration of main game loop
@@ -14,6 +9,10 @@ List of custom events defined below:
 - SHOW_VALIDATION_ERROR - executed when validation error occurs
 - HIDE_VALIDATION_ERROR - executed after 2s to hide validation error
 """
+import collections
+
+import pygame
+
 (
     DRAW,
     GAME_OVER,

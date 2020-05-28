@@ -70,7 +70,6 @@ def surface_to_texture(
         'pixels': surface_data
     }
     GL.glTexImage2D(*kwargs.values())
-    GL.glGenerateMipmap(GL.GL_TEXTURE_2D)
 
     return texture
 
@@ -110,3 +109,12 @@ def list_to_str(list_to_convert: list):
     :return: string as concatenated list elements
     """
     return "".join([str(digit) for digit in list_to_convert])
+
+
+def str_to_list(str_to_convert: str):
+    """
+    Convert string to list.
+    :param str_to_convert:  string to convert
+    :return: list of ints
+    """
+    return [int(s) for s in list(str_to_convert)]

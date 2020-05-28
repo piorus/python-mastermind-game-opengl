@@ -3,10 +3,9 @@
 from random import randint
 from typing import List
 
+from src import constants
 from src import events
-
-COMBINATION_LENGTH = 4
-NUMBER_OF_TRIES = 12
+from src.game import logic
 
 
 class State:
@@ -36,7 +35,7 @@ class State:
         self.active_indices = []
         self.current_row = 0
         self.input_enabled = True
-        self.cheater = False
+        self.active_rules_class = None
 
         events.post(events.GAME_RESET, {})
 
@@ -44,19 +43,25 @@ class State:
         """
         Game reset.
         """
-        self.combination = [randint(1, 6) for i in range(COMBINATION_LENGTH)]
-        self.answers = [[0 for j in range(COMBINATION_LENGTH)] for i in range(NUMBER_OF_TRIES)]
-        self.feedback = [[] for i in range(NUMBER_OF_TRIES)]
-        self.active_indices = [1 if i == 0 else 0 for i in range(COMBINATION_LENGTH)]
+        self.combination = [
+            randint(1, 6)
+            for i in range(constants.COMBINATION_LENGTH)
+        ]
+        self.answers = [
+            [0 for j in range(constants.COMBINATION_LENGTH)]
+            for i in range(constants.NUMBER_OF_TRIES)
+        ]
+        self.feedback = [[] for i in range(constants.NUMBER_OF_TRIES)]
+        self.active_indices = [1 if i == 0 else 0 for i in range(constants.COMBINATION_LENGTH)]
         self.current_row = len(self.answers) - 1
         self.input_enabled = True
-        self.cheater = bool(randint(0, 1))
-
+        random_index = randint(0, len(logic.AVAILABLE_RULES) - 1)
+        self.active_rules_class = logic.AVAILABLE_RULES[random_index]
+        #
         print('Combination:', self.combination)
-        print('Rules:', 'Correct rules enabled.' if not self.cheater else 'CHEATER ENABLED')
+        print('Active Rules class: ', self.active_rules_class)
 
         events.post(events.AFTER_GAME_RESET, {'state': self})
-
 
     def get_active_index(self):
         """
@@ -99,6 +104,12 @@ class State:
         """
         return self.get_feedback(row)[col]
 
+    def set_row_feedback(self, row_feedback: list, row: int = None):
+        """
+        Set row feedback.
+        """
+        self.feedback[row if row is not None else self.current_row] = row_feedback
+
     def append_feedback_digit(self, digit: int, row: int = None):
         """
         Append digit to the feedback row.
@@ -108,16 +119,16 @@ class State:
         :param digit: digit to set, this later used to determine color
         :param row: feedback row
         """
-        self.feedback[row if row else self.current_row].append(digit)
+        self.feedback[row if row is not None else self.current_row].append(digit)
 
-    def get_answer(self, row):
+    def get_answer(self, row: int = None):
         """
         Get answer for the given row.
 
         :param row: answer row
         :return list of the answers for the given row
         """
-        return self.answers[row]
+        return self.answers[row if row is not None else self.current_row]
 
     def get_answer_digit(self, row, col):
         """
@@ -136,6 +147,7 @@ class State:
         row = row if row else self.current_row
         col = col if col else self.get_active_index()
         self.answers[row][col] = digit
+        print('answers:', self.answers)
 
     def disable_input(self):
         """

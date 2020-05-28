@@ -13,10 +13,10 @@ import pygame
 from src import camera
 from src import mouse
 from src import events
+from src.game import state
 from src.game import gui
 from src.game import logic
 from src.game import scene
-from src.game import state
 
 RESOLUTION = (1024, 768)
 WINDOW_CAPTION = 'Piotr Rusin - Projekt zaliczeniowy z Języków Symbolicznych (rok 2020)'
@@ -39,7 +39,7 @@ class App:
         self.camera = camera.Camera(CAMERA_FRONT)
         self.events = events.Events()
         self.state = state.State()
-        self.logic = logic.Logic(state=self.state)
+        self.logic = logic.Logic(state_object=self.state)
         self.gui = gui.Gui()
         self.scene = scene.Scene(state_object=self.state)
 
@@ -112,11 +112,11 @@ class App:
         # hide previous game result after resetting the game
         self.events.on(events.AFTER_GAME_RESET, lambda event: self.gui.hide_result())
         # show result message and disable input when the game is won
-        self.events.on(events.GAME_WON, lambda event: self.gui.on_game_won())
+        self.events.on(events.GAME_WON, lambda event: self.gui.on_game_won(event.combination))
         # disable input, wait for reset
         self.events.on(events.GAME_WON, lambda event: self.state.disable_input())
         # show result message and disable input when the game is lost
-        self.events.on(events.GAME_OVER, lambda event: self.gui.on_game_over())
+        self.events.on(events.GAME_OVER, lambda event: self.gui.on_game_over(event.combination))
         # disable input, wait for reset
         self.events.on(events.GAME_OVER, lambda event: self.state.disable_input())
         # show validation error

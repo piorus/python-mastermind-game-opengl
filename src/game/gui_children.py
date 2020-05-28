@@ -4,17 +4,6 @@ import glm
 
 from src import text
 
-CONTROLS_TEXTS = [
-    'W, S, A, D - ruch kamerą',
-    'SCROLL UP / SCROLL DOWN - przybliżenie / oddalenie',
-    '1, 2, 3, 4, 5, 6 - wybór wartości dla danej komórki',
-    'SPACJA - zmiana aktywnej komórki',
-    'ENTER - sprawdzenie wartości z danego wiersza',
-    'R - restart',
-    'O - sprawdź czy oszust',
-    'TAB - pokaż / ukryj GUI',
-]
-
 DEFAULT_CONTROLS_COLOR = glm.vec4(1.0, 1.0, 0.0, 1.0)
 DEFAULT_CONTROLS_FONT_SIZE = 35
 
@@ -30,6 +19,18 @@ DEFAULT_RESTART_FONT_SIZE = 35
 DEFAULT_VALIDATION_ERROR_POSITION = glm.vec2(0.0, -0.8)
 DEFAULT_VALIDATION_ERROR_FONT_COLOR = glm.vec4(1.0, 0.0, 0.0, 1.0)
 DEFAULT_VALIDATION_ERROR_FONT_SIZE = 35
+
+CONTROLS_TEXTS = [
+    'W, S, A, D - ruch kamerą',
+    'SCROLL UP / SCROLL DOWN - przybliżenie / oddalenie',
+    '1, 2, 3, 4, 5, 6 - wybór wartości dla danej komórki',
+    'SPACJA - zmiana aktywnej komórki',
+    'ENTER - sprawdzenie wartości z danego wiersza',
+    'R - restart',
+    'O - sprawdź czy oszust',
+    'TAB - pokaż / ukryj GUI',
+]
+
 
 class GuiChild:
     """

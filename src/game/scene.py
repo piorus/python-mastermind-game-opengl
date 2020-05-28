@@ -1,12 +1,9 @@
 """scene module"""
-import glm
 
+from src import constants
 from src.game import opengl_objects
 from src.game import scene_children
 from src.game import state
-
-ANSWERS_START_POS = glm.vec3(0.0, 0.0, 0.0)
-ANSWERS_OFFSET = 2.5
 
 
 class Scene:
@@ -19,12 +16,12 @@ class Scene:
 
         sphere = opengl_objects.Sphere()
 
-        for row in range(12):
+        for row in range(constants.NUMBER_OF_TRIES):
             self.children.append(
                 scene_children.Answer(
                     row,
-                    ANSWERS_START_POS,
-                    ANSWERS_OFFSET,
+                    constants.ANSWERS_START_POS,
+                    constants.ANSWERS_OFFSET,
                     state_object,
                     sphere
                 )
@@ -32,8 +29,8 @@ class Scene:
             self.children.append(
                 scene_children.Feedback(
                     row,
-                    ANSWERS_START_POS,
-                    ANSWERS_OFFSET,
+                    constants.ANSWERS_START_POS,
+                    constants.ANSWERS_OFFSET,
                     state_object,
                     sphere
                 )

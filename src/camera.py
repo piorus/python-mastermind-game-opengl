@@ -177,15 +177,15 @@ class Camera:
         if self.movement_direction & RIGHT:
             self.move_right()
 
-    def on_mouse_movement(self, mouse: mouse.Mouse, constrain_pitch: bool = True):
+    def on_mouse_movement(self, mouse_object: mouse.Mouse, constrain_pitch: bool = True):
         """
         Callback for the pygame.MOUSEMOTION event that handles camera movement.
 
-        :param mouse: input.Mouse
+        :param mouse_object: input.Mouse
         :param constrain_pitch: flag that determine if pitch should be constrained
         """
-        self.yaw += (mouse.x_offset * self.mouse_sensivity)
-        self.pitch += (mouse.y_offset * self.mouse_sensivity)
+        self.yaw += (mouse_object.x_offset * self.mouse_sensivity)
+        self.pitch += (mouse_object.y_offset * self.mouse_sensivity)
 
         if constrain_pitch:
             if self.pitch > 89.0:

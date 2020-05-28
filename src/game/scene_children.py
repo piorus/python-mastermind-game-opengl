@@ -2,21 +2,9 @@
 import glm
 
 from src import camera
+from src import constants
 from src.game import opengl_objects
 from src.game import state
-
-ACTIVE_COLOR = glm.vec3(0.0, 1.0, 0.0)
-INACTIVE_COLOR = glm.vec3(1.0, 1.0, 1.0)
-# got colors from: https://www.random.org/colors/hex
-# got normalized values from: http://doc.instantreality.org/tools/color_calculator/
-SELECTION_COLORS = [
-    glm.vec3(0.474, 0.847, 0.031),
-    glm.vec3(0.752, 0.247, 0.627),
-    glm.vec3(0.450, 0.752, 0.768),
-    glm.vec3(0.172, 0.333, 0.564),
-    glm.vec3(0.635, 0.274, 0.070),
-    glm.vec3(1.000, 1.000, 0.000)
-]
 
 
 # pylint: disable=too-few-public-methods
@@ -101,9 +89,9 @@ class Answer(SceneChild):
         :return: glm.vec3 vector containing sphere color
         """
         if self.state.get_answer_digit(row, col):
-            return SELECTION_COLORS[self.state.get_answer_digit(row, col) - 1]
+            return constants.SELECTION_COLORS[self.state.get_answer_digit(row, col) - 1]
 
-        return ACTIVE_COLOR if is_active else INACTIVE_COLOR
+        return constants.ACTIVE_COLOR if is_active else constants.INACTIVE_COLOR
 
 
 class Feedback(SceneChild):
@@ -142,6 +130,7 @@ class Feedback(SceneChild):
 
         :param view: 4x4 view matrix
         :param projection: 4x4 projection matrix
+        :param camera_object: camera.Camera object
         """
         for col, feedback_pos in enumerate(self.get_points()):
             if not self.is_visible(col):
@@ -195,9 +184,9 @@ class Feedback(SceneChild):
         """
         color = None
         feedback_digit = self.state.get_feedback_digit(row, col)
-        if feedback_digit == 1:
+        if feedback_digit == constants.FEEDBACK_OF_CORRECT_POSITION:
             color = glm.vec3(1.0, 0.0, 0.0)
-        elif feedback_digit == 2:
+        elif feedback_digit == constants.FEEDBACK_OF_WRONG_POSITION:
             color = glm.vec3(1.0, 1.0, 1.0)
 
         return color
