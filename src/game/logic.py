@@ -5,7 +5,7 @@ from src.game import rules
 AVAILABLE_RULES = [
     rules.GameRules,
     rules.CheaterGameRules,
-    rules.EnchancedGameRules
+    rules.EnhancedGameRules
 ]
 
 

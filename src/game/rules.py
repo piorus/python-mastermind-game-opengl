@@ -151,7 +151,7 @@ class CheaterGameRules(GameRules):
             self.state.set_answer_digit(randint(1, 6))
 
 
-class EnchancedGameRules(GameRules):
+class EnhancedGameRules(GameRules):
     """
     New game rules. See issue #20
     """
