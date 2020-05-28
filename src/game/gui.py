@@ -115,7 +115,8 @@ class Gui:
         self.combination_text_object.set_text('Poprawna kombinacja: %s' % combination_str)
         self.cheater.set_heading_text(
             'OSZUST! Złapałeś/łaś mnie!'
-            if state_object.active_rules_class == 'asdf' else 'Tere fere.'
+            if str(state_object.active_rules_class) == "<class 'src.game.rules.CheaterGameRules'>"
+            else 'Tere fere.'
         )
 
     def on_cheater_check(self):
