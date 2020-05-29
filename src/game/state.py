@@ -1,6 +1,6 @@
 """state module"""
 
-from random import randint
+import random
 from typing import List
 
 from src import constants
@@ -44,7 +44,7 @@ class State:
         Game reset.
         """
         self.combination = [
-            randint(1, 6)
+            random.randint(1, 6)
             for i in range(constants.COMBINATION_LENGTH)
         ]
         self.answers = [
@@ -55,8 +55,7 @@ class State:
         self.active_indices = [1 if i == 0 else 0 for i in range(constants.COMBINATION_LENGTH)]
         self.current_row = len(self.answers) - 1
         self.input_enabled = True
-        random_index = randint(0, len(logic.AVAILABLE_RULES) - 1)
-        self.active_rules_class = logic.AVAILABLE_RULES[random_index]
+        self.active_rules_class = random.choice(logic.AVAILABLE_RULES)
         #
         print('Combination:', self.combination)
         print('Active Rules class: ', self.active_rules_class)
